@@ -38,120 +38,148 @@ function isRepoFullName(value: string): boolean {
 }
 
 export async function publishProject(formData: FormData) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) return { error: "not_authenticated" };
+    if (!user) return { error: "not_authenticated" };
 
-  const title = (formData.get("title") as string | null)?.trim() ?? "";
-  const oneLiner = (formData.get("one_liner") as string | null)?.trim() ?? "";
-  const whatIBuilt = (formData.get("what_i_built") as string | null)?.trim() ?? "";
-  const whyIBuilt = (formData.get("why_i_built") as string | null)?.trim() ?? "";
+    let title = (formData.get("title") as string | null)?.trim() ?? "";
+    let oneLiner = (formData.get("one_liner") as string | null)?.trim() ?? "";
+    let whatIBuilt = (formData.get("what_i_built") as string | null)?.trim() ?? "";
+    let whyIBuilt = (formData.get("why_i_built") as string | null)?.trim() ?? "";
 
-  if (!title || !oneLiner || !whatIBuilt || !whyIBuilt) {
-    return { error: "missing_required_fields" };
-  }
+    const prompts = parseJsonField<PromptBlock[]>(formData.get("prompts"), []);
+    const iterations = parseJsonField<Iteration[]>(formData.get("iterations"), []);
+    const metrics = parseJsonField<Metric[]>(formData.get("metrics"), []);
+    const stackTags = sanitizeTags(formData.get("stack_tags"));
+    const failures = (formData.get("failures") as string | null)?.trim() || null;
+    const demoLink = (formData.get("demo_link") as string | null)?.trim() || null;
+    const videoUrl = (formData.get("video_url") as string | null)?.trim() || null;
+    const lessons = (formData.get("lessons") as string | null)?.trim() || null;
+    const snippetId = (formData.get("snippet_id") as string | null)?.trim() || null;
+    const repoFullName = (formData.get("repo_full_name") as string | null)?.trim() || null;
+    if (repoFullName && !isRepoFullName(repoFullName)) {
+      return { error: "invalid_repo_full_name" };
+    }
 
-  const prompts = parseJsonField<PromptBlock[]>(formData.get("prompts"), []);
-  const iterations = parseJsonField<Iteration[]>(formData.get("iterations"), []);
-  const metrics = parseJsonField<Metric[]>(formData.get("metrics"), []);
-  const stackTags = sanitizeTags(formData.get("stack_tags"));
-  const failures = (formData.get("failures") as string | null)?.trim() || null;
-  const demoLink = (formData.get("demo_link") as string | null)?.trim() || null;
-  const videoUrl = (formData.get("video_url") as string | null)?.trim() || null;
-  const lessons = (formData.get("lessons") as string | null)?.trim() || null;
-  const snippetId = (formData.get("snippet_id") as string | null)?.trim() || null;
-  const repoFullName = (formData.get("repo_full_name") as string | null)?.trim() || null;
-  if (repoFullName && !isRepoFullName(repoFullName)) {
-    return { error: "invalid_repo_full_name" };
-  }
+    if (!title && repoFullName) {
+      title = repoFullName.split("/")[1] ?? "Imported Project";
+    }
+    if (!oneLiner) {
+      oneLiner = repoFullName
+        ? `Imported from ${repoFullName}`
+        : "Shared on vibeZ";
+    }
+    if (!whatIBuilt) {
+      whatIBuilt = repoFullName
+        ? `This project is imported from ${repoFullName}.`
+        : "Built and shared by the author.";
+    }
+    if (!whyIBuilt) {
+      whyIBuilt = "To share the build process and help other builders learn.";
+    }
 
-  const { data: project, error: insertError } = await supabase
-    .from("projects")
-    .insert({
-      author_id: user.id,
-      title,
-      one_liner: oneLiner,
-      what_i_built: whatIBuilt,
-      why_i_built: whyIBuilt,
-      prompts,
-      iterations,
-      failures,
-      stack_tags: stackTags,
-      demo_link: demoLink,
-      video_url: videoUrl,
-      metrics,
-      lessons,
-      snippet_id: snippetId,
-      status: "published",
-    })
-    .select("id")
-    .single();
+    const { data: project, error: insertError } = await supabase
+      .from("projects")
+      .insert({
+        author_id: user.id,
+        title,
+        one_liner: oneLiner,
+        what_i_built: whatIBuilt,
+        why_i_built: whyIBuilt,
+        prompts,
+        iterations,
+        failures,
+        stack_tags: stackTags,
+        demo_link: demoLink,
+        video_url: videoUrl,
+        metrics,
+        lessons,
+        snippet_id: snippetId,
+        status: "published",
+      })
+      .select("id")
+      .single();
 
-  if (insertError || !project) {
-    return { error: insertError?.message ?? "publish_failed" };
-  }
+    if (insertError || !project) {
+      return { error: insertError?.message ?? "publish_failed" };
+    }
 
-  const files = formData.getAll("files");
-  if (files.length > 0) {
-    for (const entry of files) {
-      if (!(entry instanceof File) || entry.size === 0) continue;
-      const safeName = entry.name.replaceAll(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `${user.id}/${project.id}/${randomUUID()}-${safeName}`;
+    const files = formData.getAll("files");
+    if (files.length > 0) {
+      for (const entry of files) {
+        if (!(entry instanceof File) || entry.size === 0) continue;
+        const safeName = entry.name.replaceAll(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `${user.id}/${project.id}/${randomUUID()}-${safeName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("project-assets")
-        .upload(path, entry, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: entry.type || undefined,
+        const { error: uploadError } = await supabase.storage
+          .from("project-assets")
+          .upload(path, entry, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: entry.type || undefined,
+          });
+
+        if (uploadError) {
+          return { error: `upload_failed:${uploadError.message}` };
+        }
+
+        const { error: fileInsertError } = await supabase.from("project_files").insert({
+          project_id: project.id,
+          author_id: user.id,
+          path,
+          name: entry.name,
+          mime_type: entry.type || null,
+          size_bytes: entry.size,
+          kind: inferFileKind(entry.name),
         });
 
-      if (uploadError) {
-        return { error: `upload_failed:${uploadError.message}` };
+        if (fileInsertError) {
+          return { error: `file_metadata_failed:${fileInsertError.message}` };
+        }
       }
+    }
 
-      const { error: fileInsertError } = await supabase.from("project_files").insert({
+    if (repoFullName) {
+      const { error: linkError } = await supabase.from("project_repo_links").insert({
         project_id: project.id,
-        author_id: user.id,
-        path,
-        name: entry.name,
-        mime_type: entry.type || null,
-        size_bytes: entry.size,
-        kind: inferFileKind(entry.name),
+        user_id: user.id,
+        repo_full_name: repoFullName,
       });
 
-      if (fileInsertError) {
-        return { error: `file_metadata_failed:${fileInsertError.message}` };
+      if (linkError) {
+        return { error: `repo_link_failed:${linkError.message}` };
+      }
+
+      const token = await getCurrentUserGithubToken(user.id);
+      if (token) {
+        try {
+          const webhookId = await ensureRepoWebhook(token, repoFullName);
+          if (webhookId) {
+            await supabase
+              .from("project_repo_links")
+              .update({ repo_webhook_id: webhookId })
+              .eq("project_id", project.id);
+          }
+          await syncProjectFromRepo(project.id, repoFullName, token, "initial_link_sync");
+        } catch (syncError) {
+          return {
+            error:
+              syncError instanceof Error
+                ? `repo_sync_failed:${syncError.message}`
+                : "repo_sync_failed",
+          };
+        }
       }
     }
+
+    return { id: project.id };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? `publish_unexpected:${error.message}` : "publish_unexpected",
+    };
   }
-
-  if (repoFullName) {
-    const { error: linkError } = await supabase.from("project_repo_links").insert({
-      project_id: project.id,
-      user_id: user.id,
-      repo_full_name: repoFullName,
-    });
-
-    if (linkError) {
-      return { error: `repo_link_failed:${linkError.message}` };
-    }
-
-    const token = await getCurrentUserGithubToken(user.id);
-    if (token) {
-      const webhookId = await ensureRepoWebhook(token, repoFullName);
-      if (webhookId) {
-        await supabase
-          .from("project_repo_links")
-          .update({ repo_webhook_id: webhookId })
-          .eq("project_id", project.id);
-      }
-      await syncProjectFromRepo(project.id, repoFullName, token, "initial_link_sync");
-    }
-  }
-
-  return { id: project.id };
 }

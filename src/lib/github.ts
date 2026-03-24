@@ -138,9 +138,8 @@ export async function syncProjectFromRepo(
   eventType: string,
   payload?: unknown
 ) {
-  const admin = createAdminClient();
-
   try {
+    const admin = createAdminClient();
     const repo = await fetchRepoMetadata(accessToken, repoFullName);
     const readme = await fetchRepoReadme(accessToken, repoFullName);
 
@@ -180,14 +179,19 @@ export async function syncProjectFromRepo(
 
     return { ok: true as const };
   } catch (error) {
-    await admin.from("project_sync_events").insert({
-      project_id: projectId,
-      repo_full_name: repoFullName,
-      event_type: eventType,
-      success: false,
-      message: error instanceof Error ? error.message : "Unknown sync error",
-      payload: payload ?? null,
-    });
+    try {
+      const admin = createAdminClient();
+      await admin.from("project_sync_events").insert({
+        project_id: projectId,
+        repo_full_name: repoFullName,
+        event_type: eventType,
+        success: false,
+        message: error instanceof Error ? error.message : "Unknown sync error",
+        payload: payload ?? null,
+      });
+    } catch {
+      // no-op: logging should never break publish/sync response
+    }
     return {
       ok: false as const,
       error: error instanceof Error ? error.message : "Unknown sync error",

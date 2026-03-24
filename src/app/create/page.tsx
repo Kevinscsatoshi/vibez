@@ -47,6 +47,77 @@ interface GithubRepo {
   description: string | null;
 }
 
+const POPULAR_MODELS = [
+  "GPT-4.1",
+  "GPT-4o",
+  "o3",
+  "o4-mini",
+  "Claude 3.7 Sonnet",
+  "Claude 3.5 Sonnet",
+  "Gemini 2.5 Pro",
+  "Gemini 2.0 Flash",
+  "DeepSeek R1",
+  "Llama 3.1 405B",
+  "Qwen2.5-72B",
+  "Mistral Large",
+  "Grok 2",
+];
+
+type ModelBrand = {
+  company: string;
+  logoUrl?: string;
+};
+
+const BRAND_LOGOS: Record<string, ModelBrand> = {
+  openai: {
+    company: "OpenAI",
+    logoUrl: "https://cdn.simpleicons.org/openai/FFFFFF",
+  },
+  anthropic: {
+    company: "Anthropic",
+    logoUrl: "https://cdn.simpleicons.org/anthropic/FFFFFF",
+  },
+  google: {
+    company: "Google",
+    logoUrl: "https://cdn.simpleicons.org/google/FFFFFF",
+  },
+  deepseek: {
+    company: "DeepSeek",
+    logoUrl: "https://cdn.simpleicons.org/deepseek/FFFFFF",
+  },
+  meta: {
+    company: "Meta",
+    logoUrl: "https://cdn.simpleicons.org/meta/FFFFFF",
+  },
+  alibaba: {
+    company: "Alibaba",
+    logoUrl: "https://cdn.simpleicons.org/alibabacloud/FFFFFF",
+  },
+  mistral: {
+    company: "Mistral",
+    logoUrl: "https://cdn.simpleicons.org/mistralai/FFFFFF",
+  },
+  xai: {
+    company: "xAI",
+    logoUrl: "https://cdn.simpleicons.org/x/FFFFFF",
+  },
+};
+
+function inferBrandByModel(model: string): ModelBrand {
+  const lower = model.toLowerCase();
+  if (lower.includes("gpt") || lower.includes("o3") || lower.includes("o4")) {
+    return BRAND_LOGOS.openai;
+  }
+  if (lower.includes("claude")) return BRAND_LOGOS.anthropic;
+  if (lower.includes("gemini")) return BRAND_LOGOS.google;
+  if (lower.includes("deepseek")) return BRAND_LOGOS.deepseek;
+  if (lower.includes("llama")) return BRAND_LOGOS.meta;
+  if (lower.includes("qwen")) return BRAND_LOGOS.alibaba;
+  if (lower.includes("mistral")) return BRAND_LOGOS.mistral;
+  if (lower.includes("grok")) return BRAND_LOGOS.xai;
+  return { company: "Model" };
+}
+
 const STEPS = [
   "Basics",
   "Prompts",
@@ -85,6 +156,7 @@ export default function CreatePage() {
   const [repoError, setRepoError] = useState("");
   const [repos, setRepos] = useState<GithubRepo[]>([]);
   const [selectedRepo, setSelectedRepo] = useState("");
+  const [autofillLoading, setAutofillLoading] = useState(false);
 
   const loadGithubRepos = async () => {
     setRepoLoading(true);
@@ -136,6 +208,38 @@ export default function CreatePage() {
   const removePrompt = (index: number) => {
     if (form.prompts.length <= 1) return;
     updateField("prompts", form.prompts.filter((_, i) => i !== index));
+  };
+
+  const parseModelSelections = (value: string): string[] =>
+    value
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
+
+  const serializeModelSelections = (models: string[]) =>
+    models.filter(Boolean).join(", ");
+
+  const togglePromptModelSelection = (index: number, modelName: string) => {
+    const current = parseModelSelections(form.prompts[index]?.model ?? "");
+    const exists = current.includes(modelName);
+    const next = exists
+      ? current.filter((m) => m !== modelName)
+      : [...current, modelName];
+    updatePrompt(index, "model", serializeModelSelections(next));
+  };
+
+  const setPromptOtherModel = (index: number, value: string) => {
+    const current = parseModelSelections(form.prompts[index]?.model ?? "");
+    const withoutOther = current.filter((m) => !m.startsWith("Other:"));
+    const cleaned = value.trim();
+    const next = cleaned ? [...withoutOther, `Other:${cleaned}`] : withoutOther;
+    updatePrompt(index, "model", serializeModelSelections(next));
+  };
+
+  const getPromptOtherModel = (index: number) => {
+    const current = parseModelSelections(form.prompts[index]?.model ?? "");
+    const other = current.find((m) => m.startsWith("Other:"));
+    return other ? other.replace(/^Other:\s*/, "") : "";
   };
 
   const addIteration = () => {
@@ -207,16 +311,43 @@ export default function CreatePage() {
 
   const canAdvance = () => {
     switch (step) {
-      case 0:
-        return form.title && form.one_liner && form.what_i_built && form.why_i_built;
-      case 1:
-        return form.prompts.length > 0 && form.prompts[0].prompt;
-      case 2:
-        return form.iterations.length > 0 && form.iterations[0].what_changed;
-      case 3:
-        return form.stack_tags.length > 0;
       default:
         return true;
+    }
+  };
+
+  const handleAutofillFromReadme = async () => {
+    if (!selectedRepo) return;
+    setAutofillLoading(true);
+    setRepoError("");
+    try {
+      const resp = await fetch("/api/github/readme-draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repoFullName: selectedRepo }),
+      });
+      const json = (await resp.json()) as Partial<FormData> & { error?: string };
+      if (!resp.ok || json.error) {
+        setRepoError(json.error ?? "Failed to generate draft from README");
+        return;
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        title: prev.title || (json.title ?? ""),
+        one_liner: prev.one_liner || (json.one_liner ?? ""),
+        what_i_built: prev.what_i_built || (json.what_i_built ?? ""),
+        why_i_built: prev.why_i_built || (json.why_i_built ?? ""),
+        demo_link: prev.demo_link || (json.demo_link ?? ""),
+        stack_tags:
+          prev.stack_tags.length > 0
+            ? prev.stack_tags
+            : ((json.stack_tags as string[] | undefined) ?? []),
+      }));
+    } catch {
+      setRepoError("Failed to generate draft from README");
+    } finally {
+      setAutofillLoading(false);
     }
   };
 
@@ -257,8 +388,8 @@ export default function CreatePage() {
         router.push(`/project/${result.id}`);
         router.refresh();
       }
-    } catch {
-      setPublishError("Failed to publish project");
+    } catch (e) {
+      setPublishError(e instanceof Error ? e.message : "Failed to publish project");
     } finally {
       setPublishing(false);
     }
@@ -301,6 +432,66 @@ export default function CreatePage() {
       {/* Step 0: Basics */}
       {step === 0 && (
         <div className="space-y-5">
+          <div className="rounded-xl border border-border bg-tag-bg/35 p-4">
+            <label className={labelClass}>
+              Quick start: connect GitHub and import README draft
+            </label>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href="/api/github/connect"
+                className="border border-border px-4 py-2 text-sm hover:border-foreground/30 transition-colors rounded-full"
+              >
+                {repoConnected ? "Reconnect GitHub" : "Connect GitHub"} &rarr;
+              </Link>
+              <button
+                type="button"
+                onClick={loadGithubRepos}
+                className="border border-border px-3 py-2 text-xs hover:border-foreground/30 transition-colors rounded-full"
+              >
+                Refresh repos
+              </button>
+            </div>
+            {repoLoading && (
+              <p className="text-xs text-muted mt-2">Loading repositories...</p>
+            )}
+            {repoConnected && repos.length > 0 && (
+              <div className="mt-2 space-y-2">
+                <select
+                  value={selectedRepo}
+                  onChange={(e) => setSelectedRepo(e.target.value)}
+                  className={inputClass}
+                >
+                  <option value="">Select a public repository</option>
+                  {repos.map((repo) => (
+                    <option key={repo.full_name} value={repo.full_name}>
+                      {repo.full_name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={handleAutofillFromReadme}
+                  disabled={!selectedRepo || autofillLoading}
+                  className={`px-4 py-2 text-sm rounded-full transition-colors ${
+                    !selectedRepo || autofillLoading
+                      ? "border border-border text-muted cursor-not-allowed"
+                      : "bg-foreground text-background hover:opacity-90"
+                  }`}
+                >
+                  {autofillLoading ? "Generating draft..." : "AI draft from README"}
+                </button>
+              </div>
+            )}
+            {!repoConnected && (
+              <p className="mt-2 text-xs text-muted">
+                Connect first, then choose repo and auto-fill publish fields.
+              </p>
+            )}
+            {repoError && (
+              <p className="text-xs text-red-600 mt-2">{repoError}</p>
+            )}
+          </div>
+
           <div>
             <label className={labelClass}>Title</label>
             <input
@@ -317,7 +508,7 @@ export default function CreatePage() {
               className={inputClass}
               value={form.one_liner}
               onChange={(e) => updateField("one_liner", e.target.value)}
-              placeholder="Upload your resume, get brutally honest AI feedback in 10 seconds"
+              placeholder="Optional if README import is used"
               maxLength={200}
             />
           </div>
@@ -328,7 +519,7 @@ export default function CreatePage() {
               rows={4}
               value={form.what_i_built}
               onChange={(e) => updateField("what_i_built", e.target.value)}
-              placeholder="A web app that lets users upload their resume and get structured, actionable feedback..."
+              placeholder="Optional if README import is used"
             />
           </div>
           <div>
@@ -338,7 +529,7 @@ export default function CreatePage() {
               rows={3}
               value={form.why_i_built}
               onChange={(e) => updateField("why_i_built", e.target.value)}
-              placeholder="I was helping friends review resumes and realized the feedback loop is slow..."
+              placeholder="Optional if README import is used"
             />
           </div>
         </div>
@@ -378,12 +569,75 @@ export default function CreatePage() {
                 onChange={(e) => updatePrompt(i, "prompt", e.target.value)}
                 placeholder="Paste your prompt here..."
               />
-              <input
-                className={inputClass}
-                value={block.model}
-                onChange={(e) => updatePrompt(i, "model", e.target.value)}
-                placeholder="Model/tool used (e.g., Claude 3.5 Sonnet)"
-              />
+              <div>
+                <label className={labelClass}>Model/tool used (multi-select)</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {POPULAR_MODELS.map((model) => {
+                    const selected = parseModelSelections(block.model).includes(model);
+                    const brand = inferBrandByModel(model);
+                    return (
+                      <button
+                        key={model}
+                        type="button"
+                        onClick={() => togglePromptModelSelection(i, model)}
+                        className={`px-2 py-1 text-xs rounded-full border transition-colors ${
+                          selected
+                            ? "bg-foreground text-background border-foreground"
+                            : "bg-surface text-muted border-border hover:text-foreground"
+                        }`}
+                        title={`${brand.company} · ${model}`}
+                      >
+                        <span className="inline-flex items-center gap-1.5">
+                          {brand.logoUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={brand.logoUrl}
+                              alt={brand.company}
+                              className="h-3.5 w-3.5 rounded-sm object-contain shrink-0"
+                            />
+                          ) : (
+                            <span className="inline-flex h-3.5 w-3.5 items-center justify-center rounded-sm border border-current/30 text-[9px] font-semibold leading-none shrink-0">
+                              {brand.company[0] ?? "M"}
+                            </span>
+                          )}
+                          <span>{model}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const hasOther = parseModelSelections(block.model).some((m) =>
+                        m.startsWith("Other:")
+                      );
+                      if (hasOther) {
+                        setPromptOtherModel(i, "");
+                      } else {
+                        setPromptOtherModel(i, "Custom model");
+                      }
+                    }}
+                    className={`px-2 py-1 text-xs rounded-full border transition-colors ${
+                      parseModelSelections(block.model).some((m) => m.startsWith("Other:"))
+                        ? "bg-foreground text-background border-foreground"
+                        : "bg-surface text-muted border-border hover:text-foreground"
+                    }`}
+                  >
+                    Other
+                  </button>
+                </div>
+                {parseModelSelections(block.model).some((m) => m.startsWith("Other:")) && (
+                  <input
+                    className={`${inputClass} mt-2`}
+                    value={getPromptOtherModel(i)}
+                    onChange={(e) => setPromptOtherModel(i, e.target.value)}
+                    placeholder="Enter custom model/tool name"
+                  />
+                )}
+                {block.model && (
+                  <p className="mt-1 text-xs text-muted">Selected: {block.model}</p>
+                )}
+              </div>
             </div>
           ))}
           <button
@@ -671,51 +925,11 @@ export default function CreatePage() {
             )}
           </div>
 
-          <div>
-            <label className={labelClass}>
-              Connect GitHub repository (optional, public repos)
-            </label>
-            <div className="flex flex-wrap items-center gap-2">
-              <Link
-                href="/api/github/connect"
-                className="border border-border px-4 py-2 text-sm hover:border-foreground/30 transition-colors rounded-full"
-              >
-                {repoConnected ? "Reconnect GitHub" : "Connect GitHub"} &rarr;
-              </Link>
-              <button
-                type="button"
-                onClick={loadGithubRepos}
-                className="border border-border px-3 py-2 text-xs hover:border-foreground/30 transition-colors rounded-full"
-              >
-                Refresh repos
-              </button>
-            </div>
-            <p className="text-xs text-muted mt-2">
-              {repoConnected
-                ? "Select one repo to sync README and metadata."
-                : "Sign in with GitHub to attach a repository to this project."}
+          {selectedRepo && (
+            <p className="text-xs text-muted text-center">
+              Linked repo: <span className="font-medium text-foreground">{selectedRepo}</span>
             </p>
-            {repoLoading && (
-              <p className="text-xs text-muted mt-2">Loading repositories...</p>
-            )}
-            {repoError && (
-              <p className="text-xs text-red-600 mt-2">{repoError}</p>
-            )}
-            {repoConnected && repos.length > 0 && (
-              <select
-                value={selectedRepo}
-                onChange={(e) => setSelectedRepo(e.target.value)}
-                className={`${inputClass} mt-2`}
-              >
-                <option value="">No repository selected</option>
-                {repos.map((repo) => (
-                  <option key={repo.full_name} value={repo.full_name}>
-                    {repo.full_name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+          )}
 
           <button
             type="button"
