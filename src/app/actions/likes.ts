@@ -2,8 +2,13 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
+import { isUuid } from "@/lib/is-uuid";
 
 export async function toggleLike(projectId: string) {
+  if (!isUuid(projectId)) {
+    return { error: "invalid_project_id" };
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

@@ -93,7 +93,7 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
       ref={containerRef}
       className={
         isHeader
-          ? "relative w-36 sm:w-44 md:w-50 lg:w-52 xl:w-56 shrink-0"
+          ? "relative w-32 sm:w-40 md:w-48 lg:w-52 xl:w-56 shrink-0"
           : "relative w-full max-w-xl mx-auto"
       }
     >
@@ -126,11 +126,6 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
             onKeyDown={handleKeyDown}
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted/60"
           />
-          <kbd
-            className={`hidden items-center gap-0.5 text-[10px] text-muted bg-tag-bg px-1.5 py-0.5 rounded border border-border font-mono ml-2 shrink-0 ${isHeader ? "2xl:inline-flex" : "sm:inline-flex"}`}
-          >
-            <span className="text-xs">⌘</span>K
-          </kbd>
         </div>
 
       {/* Results dropdown */}

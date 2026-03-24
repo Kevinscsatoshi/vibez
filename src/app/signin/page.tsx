@@ -134,7 +134,7 @@ export default function SignInPage() {
             alt="vibeZ"
             width={48}
             height={48}
-            className="dark:invert"
+            className="brand-logo"
           />
           <span className="text-2xl font-bold tracking-tight">
             vibe<span className="font-black">Z</span>

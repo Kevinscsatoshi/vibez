@@ -20,10 +20,11 @@ export function Header({ projects }: { projects: Project[] }) {
             alt="vibeZ"
             width={32}
             height={32}
+            className="brand-logo"
           />
           <span>vibe<span className="font-black">Z</span></span>
         </Link>
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-3 sm:gap-4">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3 md:gap-4">
           <nav className="hidden items-center gap-4 text-sm sm:flex">
             <Link href="/" className="font-bitcount text-muted hover:text-foreground transition-colors">
               {t("nav.discover")}

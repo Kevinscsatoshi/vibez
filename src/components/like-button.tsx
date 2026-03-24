@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toggleLike } from "@/app/actions/likes";
+import { isUuid } from "@/lib/is-uuid";
 
 interface LikeButtonProps {
   projectId: string;
@@ -17,6 +18,10 @@ export function LikeButton({
   initialLiked,
   size = "sm",
 }: LikeButtonProps) {
+  if (!isUuid(projectId)) {
+    return null;
+  }
+
   const router = useRouter();
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialLikeCount);
@@ -47,7 +52,11 @@ export function LikeButton({
         setLiked(wasLiked);
         setCount((c) => (wasLiked ? c + 1 : c - 1));
         if (typeof window !== "undefined") {
-          window.alert(`Like failed: ${result.error}`);
+          if (result.error === "invalid_project_id") {
+            window.alert("This sample project cannot be liked.");
+          } else {
+            window.alert(`Like failed: ${result.error}`);
+          }
         }
         return;
       }

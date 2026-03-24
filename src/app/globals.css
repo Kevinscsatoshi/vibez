@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single+Ink:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single+Ink:wght@100..900&family=Gugi&family=WDXL+Lubrifont+JP+N&family=WDXL+Lubrifont+SC&display=swap");
 @import "tailwindcss";
 
 /* Notion-like neutrals: warm canvas, crisp surfaces, minimal accent */
@@ -13,6 +13,9 @@
   --tag-bg: #f1f1ef;
   --tag-text: #37352f;
   --success: #0f7b6c;
+  --font-cjk-zh: "WDXL Lubrifont SC";
+  --font-cjk-ja: "WDXL Lubrifont JP N";
+  --font-cjk-ko: "Gugi";
 }
 
 [data-theme="dark"] {
@@ -51,6 +54,18 @@ body {
   line-height: 1.55;
 }
 
+html:lang(zh) body {
+  font-family: var(--font-cjk-zh), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+html:lang(ja) body {
+  font-family: var(--font-cjk-ja), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+html:lang(ko) body {
+  font-family: var(--font-cjk-ko), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
 html,
 body {
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -61,6 +76,30 @@ body {
   font-family: "Bitcount Prop Single Ink", var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   font-variation-settings: "wght" 520;
   letter-spacing: 0.01em;
+}
+
+/* Keep nav/action text consistent with selected CJK language fonts. */
+html:lang(zh) .font-bitcount {
+  font-family: var(--font-cjk-zh), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: normal;
+}
+
+html:lang(ja) .font-bitcount {
+  font-family: var(--font-cjk-ja), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: normal;
+}
+
+html:lang(ko) .font-bitcount {
+  font-family: var(--font-cjk-ko), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: normal;
+}
+
+.brand-logo {
+  filter: none;
+}
+
+[data-theme="dark"] .brand-logo {
+  filter: invert(1);
 }
 
 @keyframes dropdown-in {
