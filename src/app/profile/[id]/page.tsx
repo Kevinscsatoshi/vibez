@@ -74,7 +74,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
   const data = await getProfileData(id);
   if (!data) notFound();
 
-  const { author, projects, likedProjects, source } = data;
+  const { author, projects, likedProjects } = data;
   const totalForks = projects.reduce((sum, p) => sum + p.fork_count, 0);
 
   // Check if the viewer is the profile owner
@@ -91,11 +91,6 @@ export default async function ProfilePage({ params }: { params: Params }) {
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      {source === "sample" && (
-        <div className="mb-4 rounded-md border border-dashed border-border bg-tag-bg/70 px-3 py-2 text-xs text-muted">
-          Showing sample fallback data. Supabase profile/project data is unavailable.
-        </div>
-      )}
       {/* Profile header */}
       <div className="flex items-start gap-5 mb-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}

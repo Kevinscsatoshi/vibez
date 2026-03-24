@@ -5,6 +5,7 @@ import { Section } from "@/components/section";
 import { MarkdownBlock } from "@/components/markdown-block";
 import { HighlightText } from "@/components/highlight-text";
 import { LikeButton } from "@/components/like-button";
+import { GithubSyncButton } from "@/components/github-sync-button";
 import { createClient } from "@/lib/supabase-server";
 import { Metadata } from "next";
 import type { Project, Snippet } from "@/types/database";
@@ -82,12 +83,22 @@ export default async function ProjectPage({ params }: { params: Params }) {
 
   // Check if current user liked this project
   let userLiked = false;
+  let isOwner = false;
+  let repoLinked = false;
+  let projectFiles: Array<{
+    id: string;
+    path: string;
+    name: string;
+    kind: "file" | "zip";
+    size_bytes: number | null;
+  }> = [];
   try {
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (user) {
+      isOwner = user.id === project.author_id;
       const { data } = await supabase
         .from("project_likes")
         .select("user_id")
@@ -96,17 +107,33 @@ export default async function ProjectPage({ params }: { params: Params }) {
         .single();
       userLiked = !!data;
     }
+
+    const { data: files } = await supabase
+      .from("project_files")
+      .select("id, path, name, kind, size_bytes")
+      .eq("project_id", id)
+      .order("created_at", { ascending: false });
+    projectFiles =
+      (files as Array<{
+        id: string;
+        path: string;
+        name: string;
+        kind: "file" | "zip";
+        size_bytes: number | null;
+      }>) ?? [];
+
+    const { data: repoLink } = await supabase
+      .from("project_repo_links")
+      .select("id")
+      .eq("project_id", id)
+      .maybeSingle();
+    repoLinked = Boolean(repoLink);
   } catch {
     // not logged in or table doesn't exist yet
   }
 
   return (
     <div className="mx-auto w-full max-w-3xl lg:max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
-      {project._source === "sample" && (
-        <div className="mb-4 rounded-md border border-dashed border-border bg-tag-bg/70 px-3 py-2 text-xs text-muted">
-          Showing sample fallback data. Connect Supabase project data to view live content.
-        </div>
-      )}
       {/* Header */}
       <header className="mb-8">
         {project.forked_from && project.parent_project && (
@@ -251,6 +278,8 @@ export default async function ProjectPage({ params }: { params: Params }) {
       {/* Output / Demo */}
       <Section title="Output / Demo">
         <div className="space-y-4">
+          {repoLinked && isOwner && <GithubSyncButton projectId={project.id} />}
+
           {/* Sandboxed HTML demo */}
           {project.demo_html_url && (
             <div className="border border-border rounded-xl overflow-hidden">
@@ -344,6 +373,30 @@ export default async function ProjectPage({ params }: { params: Params }) {
             )}
         </div>
       </Section>
+
+      {projectFiles.length > 0 && (
+        <Section title="Files / Archive">
+          <div className="space-y-2">
+            {projectFiles.map((file) => (
+              <a
+                key={file.id}
+                href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/project-assets/${file.path}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between rounded-lg border border-border bg-surface px-3 py-2 text-sm hover:border-foreground/30 transition-colors"
+              >
+                <span className="truncate mr-3">
+                  {file.name}
+                  {file.kind === "zip" ? " (zip)" : ""}
+                </span>
+                <span className="text-xs text-muted shrink-0">
+                  {file.size_bytes ? `${Math.ceil(file.size_bytes / 1024)} KB` : ""}
+                </span>
+              </a>
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* Metrics */}
       {project.metrics.length > 0 && (

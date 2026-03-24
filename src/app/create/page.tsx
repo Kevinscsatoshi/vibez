@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { publishProject } from "./actions";
 
 interface PromptBlock {
   label: string;
@@ -37,6 +39,14 @@ interface FormData {
   lessons: string;
 }
 
+interface GithubRepo {
+  full_name: string;
+  name: string;
+  html_url: string;
+  default_branch: string;
+  description: string | null;
+}
+
 const STEPS = [
   "Basics",
   "Prompts",
@@ -63,9 +73,51 @@ const INITIAL_FORM: FormData = {
 };
 
 export default function CreatePage() {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormData>(INITIAL_FORM);
   const [tagInput, setTagInput] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [repoConnected, setRepoConnected] = useState(false);
+  const [repoLoading, setRepoLoading] = useState(false);
+  const [repoError, setRepoError] = useState("");
+  const [repos, setRepos] = useState<GithubRepo[]>([]);
+  const [selectedRepo, setSelectedRepo] = useState("");
+
+  const loadGithubRepos = async () => {
+    setRepoLoading(true);
+    setRepoError("");
+    try {
+      const resp = await fetch("/api/github/repos", { cache: "no-store" });
+      const json = (await resp.json()) as {
+        connected?: boolean;
+        repos?: GithubRepo[];
+        error?: string;
+      };
+      if (!resp.ok) {
+        setRepoError(json.error ?? "Failed to load repositories");
+        setRepoConnected(Boolean(json.connected));
+        setRepos([]);
+        return;
+      }
+      setRepoConnected(Boolean(json.connected));
+      setRepos(json.repos ?? []);
+    } catch {
+      setRepoError("Failed to load repositories");
+    } finally {
+      setRepoLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadGithubRepos();
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const githubError = params.get("github_error");
+    if (githubError) setRepoError(`GitHub connect failed: ${githubError}`);
+  }, []);
 
   const updateField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -130,6 +182,19 @@ export default function CreatePage() {
     updateField("metrics", form.metrics.filter((_, i) => i !== index));
   };
 
+  const handleFilePick = (files: FileList | null) => {
+    if (!files) return;
+    const next: File[] = [];
+    for (const file of Array.from(files)) {
+      next.push(file);
+    }
+    setSelectedFiles((prev) => [...prev, ...next]);
+  };
+
+  const removeSelectedFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const normalizeSnippetId = (value: string) => {
     const raw = value.trim();
     if (!raw) return "";
@@ -152,6 +217,50 @@ export default function CreatePage() {
         return form.stack_tags.length > 0;
       default:
         return true;
+    }
+  };
+
+  const handlePublish = async () => {
+    setPublishError("");
+    setPublishing(true);
+    try {
+      const payload = new FormData();
+      payload.set("title", form.title);
+      payload.set("one_liner", form.one_liner);
+      payload.set("what_i_built", form.what_i_built);
+      payload.set("why_i_built", form.why_i_built);
+      payload.set("prompts", JSON.stringify(form.prompts));
+      payload.set("iterations", JSON.stringify(form.iterations));
+      payload.set("failures", form.failures);
+      payload.set("stack_tags", JSON.stringify(form.stack_tags));
+      payload.set("demo_link", form.demo_link);
+      payload.set("video_url", form.video_url);
+      payload.set("snippet_id", form.snippet_id);
+      payload.set("metrics", JSON.stringify(form.metrics));
+      payload.set("lessons", form.lessons);
+      if (selectedRepo) payload.set("repo_full_name", selectedRepo);
+
+      for (const file of selectedFiles) {
+        payload.append("files", file);
+      }
+
+      const result = await publishProject(payload);
+      if (result.error === "not_authenticated") {
+        router.push(`/signin?next=${encodeURIComponent("/create")}`);
+        return;
+      }
+      if (result.error) {
+        setPublishError(result.error);
+        return;
+      }
+      if (result.id) {
+        router.push(`/project/${result.id}`);
+        router.refresh();
+      }
+    } catch {
+      setPublishError("Failed to publish project");
+    } finally {
+      setPublishing(false);
     }
   };
 
@@ -436,6 +545,39 @@ export default function CreatePage() {
               and paste the snippet ID here.
             </p>
           </div>
+
+          <div>
+            <label className={labelClass}>
+              Upload code files / zip (optional)
+            </label>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => handleFilePick(e.target.files)}
+              className={`${inputClass} file:mr-3 file:rounded-lg file:border-0 file:bg-tag-bg file:px-2.5 file:py-1 file:text-xs`}
+            />
+            {selectedFiles.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {selectedFiles.map((file, i) => (
+                  <div
+                    key={`${file.name}-${i}`}
+                    className="flex items-center justify-between rounded-lg border border-border bg-tag-bg/40 px-2.5 py-1.5 text-xs"
+                  >
+                    <span className="truncate mr-3">
+                      {file.name} ({Math.ceil(file.size / 1024)} KB)
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeSelectedFile(i)}
+                      className="text-muted hover:text-foreground"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -531,21 +673,67 @@ export default function CreatePage() {
 
           <div>
             <label className={labelClass}>
-              Connect GitHub repository (optional)
+              Connect GitHub repository (optional, public repos)
             </label>
-            <button className="border border-border px-4 py-2 text-sm hover:border-foreground/30 transition-colors rounded-full">
-              Connect GitHub &rarr;
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href="/api/github/connect"
+                className="border border-border px-4 py-2 text-sm hover:border-foreground/30 transition-colors rounded-full"
+              >
+                {repoConnected ? "Reconnect GitHub" : "Connect GitHub"} &rarr;
+              </Link>
+              <button
+                type="button"
+                onClick={loadGithubRepos}
+                className="border border-border px-3 py-2 text-xs hover:border-foreground/30 transition-colors rounded-full"
+              >
+                Refresh repos
+              </button>
+            </div>
             <p className="text-xs text-muted mt-2">
-              Sign in with GitHub to attach a repository to this project.
+              {repoConnected
+                ? "Select one repo to sync README and metadata."
+                : "Sign in with GitHub to attach a repository to this project."}
             </p>
+            {repoLoading && (
+              <p className="text-xs text-muted mt-2">Loading repositories...</p>
+            )}
+            {repoError && (
+              <p className="text-xs text-red-600 mt-2">{repoError}</p>
+            )}
+            {repoConnected && repos.length > 0 && (
+              <select
+                value={selectedRepo}
+                onChange={(e) => setSelectedRepo(e.target.value)}
+                className={`${inputClass} mt-2`}
+              >
+                <option value="">No repository selected</option>
+                {repos.map((repo) => (
+                  <option key={repo.full_name} value={repo.full_name}>
+                    {repo.full_name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
-          <button className="w-full bg-foreground text-background py-3 text-sm font-medium hover:opacity-90 transition-opacity rounded-full">
-            Publish Project
+          <button
+            type="button"
+            onClick={handlePublish}
+            disabled={publishing}
+            className={`w-full py-3 text-sm font-medium transition-opacity rounded-full ${
+              publishing
+                ? "bg-border text-muted cursor-not-allowed"
+                : "bg-foreground text-background hover:opacity-90"
+            }`}
+          >
+            {publishing ? "Publishing..." : "Publish Project"}
           </button>
+          {publishError && (
+            <p className="text-xs text-red-600 text-center">{publishError}</p>
+          )}
           <p className="text-xs text-muted text-center">
-            Your project will be reviewed before appearing on Discover.
+            Publishing is instant. You can edit and resync later.
           </p>
         </div>
       )}
