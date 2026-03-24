@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getProjectById } from "@/lib/sample-data";
 import { Section } from "@/components/section";
 import { MarkdownBlock } from "@/components/markdown-block";
+import { HighlightText } from "@/components/highlight-text";
 import { Metadata } from "next";
 
 type Params = Promise<{ id: string }>;
@@ -93,11 +94,15 @@ export default async function ProjectPage({ params }: { params: Params }) {
 
       {/* Overview */}
       <Section title="What I Built">
-        <p className="text-sm leading-relaxed">{project.what_i_built}</p>
+        <p className="text-sm leading-relaxed text-muted">
+          <HighlightText text={project.what_i_built} />
+        </p>
       </Section>
 
       <Section title="Why I Built It">
-        <p className="text-sm leading-relaxed">{project.why_i_built}</p>
+        <p className="text-sm leading-relaxed text-muted">
+          <HighlightText text={project.why_i_built} />
+        </p>
       </Section>
 
       {/* Prompts */}
@@ -133,13 +138,13 @@ export default async function ProjectPage({ params }: { params: Params }) {
               <span className="text-xs font-semibold uppercase tracking-wide text-muted">
                 {iter.version}
               </span>
-              <p className="text-sm mt-1">
-                <span className="font-medium">Changed:</span>{" "}
-                {iter.what_changed}
+              <p className="text-sm mt-1 text-muted">
+                <span className="font-medium text-foreground">Changed:</span>{" "}
+                <HighlightText text={iter.what_changed} />
               </p>
               <p className="text-sm text-muted mt-0.5">
                 <span className="font-medium text-foreground">Result:</span>{" "}
-                {iter.result}
+                <HighlightText text={iter.result} />
               </p>
             </div>
           ))}
@@ -149,7 +154,9 @@ export default async function ProjectPage({ params }: { params: Params }) {
       {/* Failures */}
       {project.failures && (
         <Section title="What Didn't Work">
-          <p className="text-sm leading-relaxed">{project.failures}</p>
+          <p className="text-sm leading-relaxed text-muted">
+            <HighlightText text={project.failures} />
+          </p>
         </Section>
       )}
 
@@ -261,7 +268,9 @@ export default async function ProjectPage({ params }: { params: Params }) {
       {/* Lessons */}
       {project.lessons && (
         <Section title="Lessons Learned">
-          <p className="text-sm leading-relaxed">{project.lessons}</p>
+          <p className="text-sm leading-relaxed text-muted">
+            <HighlightText text={project.lessons} />
+          </p>
         </Section>
       )}
 
@@ -322,7 +331,9 @@ export default async function ProjectPage({ params }: { params: Params }) {
       {/* Fork description */}
       {project.fork_description && (
         <Section title="What Changed in This Fork">
-          <p className="text-sm leading-relaxed">{project.fork_description}</p>
+          <p className="text-sm leading-relaxed text-muted">
+            <HighlightText text={project.fork_description} />
+          </p>
         </Section>
       )}
     </div>

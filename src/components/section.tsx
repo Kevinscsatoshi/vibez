@@ -6,11 +6,13 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-border pt-6 pb-2">
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4">
+    <section className="mb-5">
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2.5 px-1">
         {title}
       </h2>
-      {children}
+      <div className="bg-surface border border-border rounded-2xl p-5">
+        {children}
+      </div>
     </section>
   );
 }
