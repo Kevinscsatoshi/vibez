@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Project } from "@/types/database";
 import { filterProjectsByQuery } from "@/lib/search-projects";
+import { useUiPreferences } from "@/components/providers/ui-preferences-provider";
 
 interface SearchBarProps {
   projects: Project[];
@@ -14,6 +15,7 @@ interface SearchBarProps {
 
 export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
   const router = useRouter();
+  const { t } = useUiPreferences();
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -91,7 +93,7 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
       ref={containerRef}
       className={
         isHeader
-          ? "relative w-36 sm:w-44 md:w-52 lg:w-56 shrink-0"
+          ? "relative w-36 sm:w-44 md:w-50 lg:w-52 xl:w-56 shrink-0"
           : "relative w-full max-w-xl mx-auto"
       }
     >
@@ -113,7 +115,7 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
             ref={inputRef}
             type="text"
             placeholder={
-              isHeader ? "Search…" : "Search projects, stacks, builders..."
+              isHeader ? t("search.placeholder") : t("search.placeholder")
             }
             value={query}
             onChange={(e) => {
@@ -125,7 +127,7 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted/60"
           />
           <kbd
-            className={`hidden items-center gap-0.5 text-[10px] text-muted bg-tag-bg px-1.5 py-0.5 rounded border border-border font-mono ${isHeader ? "xl:inline-flex" : "sm:inline-flex"}`}
+            className={`hidden items-center gap-0.5 text-[10px] text-muted bg-tag-bg px-1.5 py-0.5 rounded border border-border font-mono ml-2 shrink-0 ${isHeader ? "2xl:inline-flex" : "sm:inline-flex"}`}
           >
             <span className="text-xs">⌘</span>K
           </kbd>
@@ -180,7 +182,7 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
                 onClick={() => setIsOpen(false)}
                 className="text-xs font-medium text-accent hover:underline underline-offset-2"
               >
-                View all {filtered.length} results →
+                {t("search.viewAll", { count: filtered.length })}
               </Link>
             </div>
           )}
@@ -193,7 +195,7 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
           className={`${panelClass} bg-surface border border-border rounded-md shadow-[0_4px_12px_rgba(15,15,15,0.08)] p-6 text-center animate-dropdown-in`}
         >
           <p className="text-sm text-muted">
-            No projects found for &ldquo;{query}&rdquo;
+            {t("search.noResults", { query })}
           </p>
         </div>
       )}

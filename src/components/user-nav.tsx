@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import type { Profile } from "@/types/database";
+import { useUiPreferences } from "@/components/providers/ui-preferences-provider";
 
 export function UserNav() {
   const router = useRouter();
+  const { t } = useUiPreferences();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,7 @@ export function UserNav() {
         href="/signin"
         className="font-bitcount shrink-0 bg-foreground text-background px-3 sm:px-4 py-1.5 text-xs sm:text-sm hover:opacity-90 transition-opacity whitespace-nowrap rounded-md"
       >
-        Sign in
+        {t("auth.signIn")}
       </Link>
     );
   }
@@ -84,7 +86,7 @@ export function UserNav() {
         onClick={handleSignOut}
         className="font-bitcount text-xs text-muted hover:text-foreground transition-colors shrink-0"
       >
-        Sign out
+        {t("auth.signOut")}
       </button>
     </div>
   );

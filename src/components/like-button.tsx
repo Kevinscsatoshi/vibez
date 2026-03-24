@@ -46,6 +46,9 @@ export function LikeButton({
         // Revert on error
         setLiked(wasLiked);
         setCount((c) => (wasLiked ? c + 1 : c - 1));
+        if (typeof window !== "undefined") {
+          window.alert(`Like failed: ${result.error}`);
+        }
         return;
       }
 

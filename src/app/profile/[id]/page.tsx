@@ -41,10 +41,20 @@ async function getProfileData(id: string) {
         .select("project_id, projects:project_id(*, author:profiles(*))")
         .eq("user_id", id);
 
+      const normalizedLikedProjects = (likedProjects ?? [])
+        .map((row) => {
+          const linked = (row as Record<string, unknown>).projects;
+          if (Array.isArray(linked)) {
+            return (linked[0] as Project | undefined) ?? null;
+          }
+          return (linked as Project | null) ?? null;
+        })
+        .filter(Boolean) as Project[];
+
       return {
         author: profile as Profile,
         projects: (projects || []) as Project[],
-        likedProjects: (likedProjects?.map((l: Record<string, unknown>) => l.projects).filter(Boolean) || []) as Project[],
+        likedProjects: normalizedLikedProjects,
         source: "supabase" as const,
       };
     }
@@ -161,7 +171,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {likedProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard key={project.id} project={project} liked />
             ))}
           </div>
         </>

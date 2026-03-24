@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { getAllProjects } from "@/lib/sample-data";
+import { UiPreferencesProvider } from "@/components/providers/ui-preferences-provider";
+import { FooterTagline } from "@/components/footer-tagline";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,12 +39,32 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var storedTheme = localStorage.getItem("vibez.theme");
+                  var theme = storedTheme === "dark" || storedTheme === "light"
+                    ? storedTheme
+                    : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+                  document.documentElement.dataset.theme = theme;
+                  document.documentElement.style.colorScheme = theme;
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
-        <Header projects={projects} />
-        <main className="flex-1">{children}</main>
-        <footer className="border-t border-border py-8 text-center text-sm text-muted">
-          <p>vibeZ — Built for builders who ship with AI</p>
-        </footer>
+        <UiPreferencesProvider>
+          <Header projects={projects} />
+          <main className="flex-1">{children}</main>
+          <footer className="border-t border-border py-8 text-center text-sm text-muted">
+            <FooterTagline />
+          </footer>
+        </UiPreferencesProvider>
       </body>
     </html>
   );
