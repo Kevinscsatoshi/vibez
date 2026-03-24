@@ -7,7 +7,34 @@ interface ProjectCardProps {
   liked?: boolean;
 }
 
+function getVideoThumbnail(url: string | null): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("youtu.be")) {
+      const id = parsed.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+    }
+    if (parsed.hostname.includes("youtube.com")) {
+      const id = parsed.searchParams.get("v");
+      return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+    }
+    if (parsed.hostname.includes("loom.com")) {
+      const parts = parsed.pathname.split("/").filter(Boolean);
+      const id = parts[parts.length - 1];
+      return id ? `https://cdn.loom.com/sessions/thumbnails/${id}-with-play.jpg` : null;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export function ProjectCard({ project, liked = false }: ProjectCardProps) {
+  const screenshot = project.screenshots[0] ?? null;
+  const videoThumb = getVideoThumbnail(project.video_url);
+  const previewImage = screenshot ?? videoThumb;
+
   return (
     <div className="group relative border border-border bg-surface p-4 rounded-md hover:bg-tag-bg/80 transition-colors">
       <Link
@@ -16,6 +43,26 @@ export function ProjectCard({ project, liked = false }: ProjectCardProps) {
         aria-label={project.title}
       />
       <div className="relative z-10 pointer-events-none">
+        <div className="mb-3">
+          {previewImage ? (
+            <div className="relative overflow-hidden rounded-md border border-border bg-tag-bg">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewImage}
+                alt={`${project.title} preview`}
+                className="h-40 w-full object-cover"
+              />
+              <span className="absolute right-2 top-2 rounded bg-black/65 px-1.5 py-0.5 text-[10px] text-white uppercase tracking-wide">
+                {screenshot ? "Image" : "Video"}
+              </span>
+            </div>
+          ) : (
+            <div className="h-40 w-full rounded-md border border-dashed border-border bg-tag-bg/40 flex items-center justify-center">
+              <span className="text-xs text-muted">No media preview</span>
+            </div>
+          )}
+        </div>
+
         <div className="mb-3">
           <h3 className="font-semibold text-base leading-snug">{project.title}</h3>
           <p className="mt-1 text-sm text-muted leading-relaxed">{project.one_liner}</p>

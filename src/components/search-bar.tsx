@@ -93,13 +93,13 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
       ref={containerRef}
       className={
         isHeader
-          ? "relative w-32 sm:w-40 md:w-48 lg:w-52 xl:w-56 shrink-0"
+          ? "relative w-36 sm:w-44 md:w-52 lg:w-56 xl:w-60 shrink-0"
           : "relative w-full max-w-xl mx-auto"
       }
     >
-      <div className="relative flex items-center bg-surface border border-border rounded-md px-2.5 py-1.5 sm:px-3 sm:py-2 focus-within:border-muted focus-within:shadow-[0_0_0_1px_rgba(55,53,47,0.09)] transition-shadow">
+      <div className="relative flex items-center bg-surface border border-border rounded-md px-2.5 py-2 sm:px-3 sm:py-2.5 focus-within:border-muted focus-within:shadow-[0_0_0_1px_rgba(55,53,47,0.09)] transition-shadow">
           <svg
-            className="h-4 w-4 text-muted shrink-0 mr-3"
+            className="h-4.5 w-4.5 text-muted shrink-0 mr-3"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -124,7 +124,7 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
             }}
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted/60"
+            className="flex-1 bg-transparent text-base outline-none placeholder:text-muted/60"
           />
         </div>
 

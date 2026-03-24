@@ -91,7 +91,9 @@ export const sampleProjects: Project[] = [
     failures:
       "Initially tried to build a full trading interface with order placement — way too complex for an MVP. Stripped it back to read-only market monitoring with news context, which is what users actually wanted. Also experimented with auto-generated trading signals but the liability risk wasn't worth it.",
     stack_tags: ["Next.js", "TypeScript", "Vercel", "Polymarket API", "Claude API", "Tailwind CSS"],
-    screenshots: [],
+    screenshots: [
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80",
+    ],
     demo_html_url: null,
     demo_link: "https://newz.beer",
     video_url: null,
@@ -162,7 +164,9 @@ export const sampleProjects: Project[] = [
     failures:
       "Tried to auto-trade based on geopolitical signals — terrible idea, the signal-to-noise ratio was too low for automated execution. Also built a complex NLP pipeline for news analysis before realizing Claude could do it better with simple prompting. Threw away 2 weeks of custom NLP code.",
     stack_tags: ["Next.js", "TypeScript", "Vercel", "Three.js", "Cobe", "Claude API", "Telegram API", "Swift"],
-    screenshots: [],
+    screenshots: [
+      "https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?auto=format&fit=crop&w=1400&q=80",
+    ],
     demo_html_url: null,
     demo_link: "https://geo-z.vercel.app",
     video_url: null,
@@ -237,7 +241,9 @@ export const sampleProjects: Project[] = [
     failures:
       "Tried using GPT-4 initially but the latency was 15-20 seconds per analysis. Users bounced. Switched to Claude 3.5 Sonnet and got it under 5 seconds. Also tried OCR for scanned resumes but the accuracy was terrible \u2014 dropped it and required text-based PDFs only.",
     stack_tags: ["Next.js", "Claude API", "Vercel", "pdf.js", "Tailwind CSS", "Stripe"],
-    screenshots: [],
+    screenshots: [
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1400&q=80",
+    ],
     demo_html_url: null,
     demo_link: "https://resumeroaster.ai",
     video_url: null,
@@ -318,7 +324,9 @@ export const sampleProjects: Project[] = [
       "Tailwind CSS",
       "Vercel",
     ],
-    screenshots: [],
+    screenshots: [
+      "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1400&q=80",
+    ],
     demo_html_url: null,
     demo_link: null,
     video_url: null,
@@ -380,7 +388,9 @@ export const sampleProjects: Project[] = [
     failures:
       "Tried to auto-detect who said what from the transcript but speaker attribution was unreliable with Zoom's default transcription. Dropped auto-attribution and asked users to use labeled transcripts instead.",
     stack_tags: ["Slack API", "Claude API", "Node.js", "Vercel Functions"],
-    screenshots: [],
+    screenshots: [
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80",
+    ],
     demo_html_url: null,
     demo_link: null,
     video_url: null,
@@ -441,7 +451,9 @@ export const sampleProjects: Project[] = [
     failures:
       "Tried generating React components instead of plain HTML \u2014 too complex, too many dependencies to resolve. Plain HTML + Tailwind CDN is the sweet spot for instant-deployable output.",
     stack_tags: ["Next.js", "Claude API", "Tailwind CSS", "Vercel"],
-    screenshots: [],
+    screenshots: [
+      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1400&q=80",
+    ],
     demo_html_url: null,
     demo_link: "https://landinggen.dev",
     video_url: null,
@@ -501,7 +513,9 @@ export const sampleProjects: Project[] = [
     failures:
       "Tried to review entire files instead of just the diff \u2014 way too expensive and slow. Also tried GPT-4 but the cost per review was $0.50-1.00. Claude Haiku brought it down to $0.02-0.05 per review.",
     stack_tags: ["GitHub Actions", "Claude API", "TypeScript", "GitHub API"],
-    screenshots: [],
+    screenshots: [
+      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1400&q=80",
+    ],
     demo_html_url: null,
     demo_link: null,
     video_url: null,
@@ -562,7 +576,9 @@ export const sampleProjects: Project[] = [
     failures:
       "Tried to build automatic prompt optimization (genetic algorithms on prompts) but the search space was too large and results were unpredictable. Went back to manual A/B testing which is simpler and more trustworthy.",
     stack_tags: ["React", "Python", "FastAPI", "PostgreSQL", "Recharts"],
-    screenshots: [],
+    screenshots: [
+      "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1400&q=80",
+    ],
     demo_html_url: null,
     demo_link: null,
     video_url: null,

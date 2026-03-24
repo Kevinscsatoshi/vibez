@@ -13,7 +13,7 @@ export function Header({ projects }: { projects: Project[] }) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface">
-      <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight">
           <Image
             src="/logo.svg"
@@ -25,7 +25,7 @@ export function Header({ projects }: { projects: Project[] }) {
           <span>vibe<span className="font-black">Z</span></span>
         </Link>
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3 md:gap-4">
-          <nav className="hidden items-center gap-4 text-sm sm:flex">
+          <nav className="hidden items-center gap-5 text-base sm:flex">
             <Link href="/" className="font-bitcount text-muted hover:text-foreground transition-colors">
               {t("nav.discover")}
             </Link>
@@ -40,7 +40,7 @@ export function Header({ projects }: { projects: Project[] }) {
             aria-label={t("ui.language")}
             value={language}
             onChange={(e) => setLanguage(e.target.value as Language)}
-            className="hidden md:inline-flex h-8 rounded-md border border-border bg-surface px-2 text-xs text-muted"
+            className="hidden md:inline-flex h-9 rounded-md border border-border bg-surface px-3 text-sm text-muted"
           >
             {Object.entries(LANGUAGE_LABELS).map(([code, label]) => (
               <option key={code} value={code}>
@@ -52,7 +52,7 @@ export function Header({ projects }: { projects: Project[] }) {
             type="button"
             aria-label={t("ui.theme")}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-surface px-2 text-xs text-muted hover:text-foreground transition-colors"
+            className="inline-flex h-9 items-center justify-center rounded-md border border-border bg-surface px-3 text-sm text-muted hover:text-foreground transition-colors"
           >
             {theme === "dark" ? t("ui.light") : t("ui.dark")}
           </button>
