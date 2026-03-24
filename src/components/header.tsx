@@ -1,13 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export function Header() {
   return (
     <header className="border-b border-border bg-surface">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="text-lg font-bold tracking-tight">
-          vibe<span className="font-black">Z</span>
+        <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight">
+          <Image
+            src="/logo.svg"
+            alt="vibeZ"
+            width={32}
+            height={32}
+          />
+          <span>vibe<span className="font-black">Z</span></span>
         </Link>
         <nav className="flex items-center gap-3 sm:gap-6 text-sm">
           <Link href="/" className="hidden sm:block text-muted hover:text-foreground transition-colors">

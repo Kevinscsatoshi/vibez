@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <g stroke="black" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <!-- Top bar lines curving into diagonal -->
+    <path d="M 8,10 L 92,10 Q 86,22 50,55 Q 34,72 12,92"/>
+    <path d="M 8,16 L 86,16 Q 80,28 48,58 Q 33,74 12,92"/>
+    <path d="M 8,22 L 80,22 Q 74,34 46,61 Q 32,76 12,92"/>
+    <path d="M 8,28 L 74,28 Q 68,40 44,64 Q 31,78 12,92"/>
+    <path d="M 8,34 L 68,34 Q 62,46 42,67 Q 30,80 12,92"/>
+    <path d="M 8,40 L 62,40 Q 56,52 40,70 Q 29,82 12,92"/>
+    <path d="M 8,46 L 56,46 Q 50,58 38,73 Q 28,84 12,92"/>
+    <!-- Diagonal flowing into bottom bar lines -->
+    <path d="M 92,90 L 8,90 Q 14,78 50,45 Q 66,28 88,8"/>
+    <path d="M 92,84 L 14,84 Q 20,72 52,42 Q 67,26 88,8"/>
+    <path d="M 92,78 L 20,78 Q 26,66 54,39 Q 68,24 88,8"/>
+    <path d="M 92,72 L 26,72 Q 32,60 56,36 Q 69,22 88,8"/>
+    <path d="M 92,66 L 32,66 Q 38,54 58,33 Q 70,20 88,8"/>
+    <path d="M 92,60 L 38,60 Q 44,48 60,30 Q 71,18 88,8"/>
+    <path d="M 92,54 L 44,54 Q 50,42 62,27 Q 72,16 88,8"/>
+  </g>
+</svg>

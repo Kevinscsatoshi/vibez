@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type Mode = "signin" | "signup";
 
@@ -51,8 +52,17 @@ export default function SignInPage() {
   return (
     <div className="mx-auto max-w-sm px-4 py-16">
       <div className="mb-8 text-center">
-        <Link href="/" className="text-2xl font-bold tracking-tight">
-          vibe<span className="font-black">Z</span>
+        <Link href="/" className="inline-flex flex-col items-center gap-2">
+          <Image
+            src="/logo.svg"
+            alt="vibeZ"
+            width={48}
+            height={48}
+            className="dark:invert"
+          />
+          <span className="text-2xl font-bold tracking-tight">
+            vibe<span className="font-black">Z</span>
+          </span>
         </Link>
         <p className="mt-2 text-sm text-muted">
           {mode === "signin"

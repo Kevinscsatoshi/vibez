@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <g stroke="black" stroke-width="1.8" stroke-linecap="round" fill="none">
+    <!-- Top bar lines curving into diagonal -->
+    <path d="M 10,12 L 90,12 Q 85,20 50,55 Q 35,72 15,88"/>
+    <path d="M 10,16 L 86,16 Q 82,24 48,57 Q 34,73 15,88"/>
+    <path d="M 10,20 L 82,20 Q 78,28 46,59 Q 33,74 15,88"/>
+    <path d="M 10,24 L 78,24 Q 74,32 44,61 Q 32,75 15,88"/>
+    <path d="M 10,28 L 74,28 Q 70,36 42,63 Q 31,76 15,88"/>
+    <path d="M 10,32 L 70,32 Q 66,40 40,65 Q 30,77 15,88"/>
+    <path d="M 10,36 L 66,36 Q 62,44 38,67 Q 29,78 15,88"/>
+    <path d="M 10,40 L 62,40 Q 58,48 36,69 Q 28,79 15,88"/>
+    <!-- Diagonal flowing into bottom bar lines -->
+    <path d="M 85,88 L 10,88 Q 15,80 50,45 Q 65,28 85,12"/>
+    <path d="M 85,84 L 14,84 Q 18,76 52,43 Q 66,27 85,12"/>
+    <path d="M 85,80 L 18,80 Q 22,72 54,41 Q 67,26 85,12"/>
+    <path d="M 85,76 L 22,76 Q 26,68 56,39 Q 68,25 85,12"/>
+    <path d="M 85,72 L 26,72 Q 30,64 58,37 Q 69,24 85,12"/>
+    <path d="M 85,68 L 30,68 Q 34,60 60,35 Q 70,23 85,12"/>
+    <path d="M 85,64 L 34,64 Q 38,56 62,33 Q 71,22 85,12"/>
+    <path d="M 85,60 L 38,60 Q 42,52 64,31 Q 72,21 85,12"/>
+  </g>
+</svg>
