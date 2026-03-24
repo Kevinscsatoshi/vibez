@@ -37,6 +37,18 @@ const authors: Profile[] = [
     github_url: "https://github.com/emmadev",
     created_at: "2026-02-10T00:00:00Z",
   },
+  {
+    id: "user-admin",
+    github_username: "Kevinscsatoshi",
+    display_name: "Kevin Gu",
+    avatar_url: "https://avatars.githubusercontent.com/u/100052163?v=4",
+    avatar_source: "github",
+    avatar_preset_id: null,
+    gender: "male",
+    bio: "Builder & founder. Shipping AI-powered tools at the intersection of finance, geopolitics, and prediction markets.",
+    github_url: "https://github.com/Kevinscsatoshi",
+    created_at: "2026-01-01T00:00:00Z",
+  },
 ];
 
 export const sampleProjects: Project[] = [
@@ -432,6 +444,141 @@ export const sampleProjects: Project[] = [
     status: "published",
     featured: false,
     author: authors[2],
+  },
+  {
+    id: "proj-newz",
+    created_at: "2026-02-15T10:00:00Z",
+    updated_at: "2026-03-24T10:00:00Z",
+    author_id: "user-admin",
+    title: "NewZ — Polymarket Radar",
+    one_liner: "A minimalist radar for Polymarket events. Track prediction markets through the lens of news.",
+    what_i_built:
+      "A web app that connects prediction market data from Polymarket with real-time news context. Users can track market movements, see which events are driving price changes, and get a news-integrated view of prediction markets. The interface is minimalist and focused — no clutter, just signal.",
+    why_i_built:
+      "Polymarket is great for seeing odds, but it lacks news context. I wanted a tool that answers 'why is this market moving?' by pairing market data with relevant news in real-time. Most prediction market tools are either too complex or too shallow — NewZ sits in the sweet spot.",
+    prompts: [
+      {
+        label: "News-market correlation engine",
+        prompt:
+          "You are a prediction market analyst. Given a Polymarket event and a set of recent news articles, determine:\n1. Which articles are directly relevant to this market\n2. How each article might impact the probability (bullish/bearish/neutral)\n3. A one-line summary of the current news sentiment\n4. Key signals to watch\n\nMarket: {market_title}\nCurrent probability: {probability}\nArticles:\n{articles_json}\n\nReturn structured JSON.",
+        model: "Claude 3.5 Sonnet",
+      },
+    ],
+    iterations: [
+      {
+        version: "v1",
+        what_changed: "Basic Polymarket API integration with market listing",
+        result: "Functional but felt like a worse version of the Polymarket UI itself.",
+      },
+      {
+        version: "v2",
+        what_changed: "Added news feed integration, AI-powered relevance scoring, and a clean dark-theme UI",
+        result: "Much more useful. The news-to-market pairing became the core differentiator.",
+      },
+      {
+        version: "v3",
+        what_changed: "Real-time price updates, event filtering, mobile-responsive redesign",
+        result: "Production-ready. Deployed to newz.beer and started getting organic traffic.",
+      },
+    ],
+    failures:
+      "Initially tried to build a full trading interface with order placement — way too complex for an MVP. Stripped it back to read-only market monitoring with news context, which is what users actually wanted. Also experimented with auto-generated trading signals but the liability risk wasn't worth it.",
+    stack_tags: ["Next.js", "TypeScript", "Vercel", "Polymarket API", "Claude API", "Tailwind CSS"],
+    screenshots: [],
+    demo_html_url: null,
+    demo_link: "https://newz.beer",
+    video_url: null,
+    metrics: [
+      { name: "Markets tracked", value: "200+", timeframe: "live" },
+      { name: "Daily active users", value: "150+", timeframe: "organic" },
+    ],
+    lessons:
+      "For data-heavy products, less is more. Users don't want every data point — they want the right data point at the right time. The AI layer works best as a filter, not a generator. Also: .beer is a surprisingly memorable TLD.",
+    github_repo_url: "https://github.com/Kevinscsatoshi/newz-beer",
+    github_repo_name: "newz-beer",
+    github_repo_description: "Minimalist Polymarket radar with news integration",
+    github_repo_language: "TypeScript",
+    github_repo_stars: 0,
+    github_repo_updated_at: "2026-02-27T11:52:20Z",
+    github_readme: null,
+    forked_from: null,
+    fork_description: null,
+    fork_count: 2,
+    view_count: 1200,
+    status: "published",
+    featured: true,
+    author: authors[3],
+  },
+  {
+    id: "proj-geoz",
+    created_at: "2026-03-01T10:00:00Z",
+    updated_at: "2026-03-24T10:00:00Z",
+    author_id: "user-admin",
+    title: "GeoZ — Supply Chain Intelligence",
+    one_liner: "Visualize global supply chains, trace upstream dependencies, and understand how geopolitical events impact your portfolio.",
+    what_i_built:
+      "A supply chain intelligence platform with an interactive 3D globe visualization showing supply chain hotspots. Features include a live event feed with 48-hour pulse view, stock-to-supply-chain search, Telegram OSINT integration, and geopolitical risk scoring. Users can search any stock and see its full upstream supply chain mapped on the globe.",
+    why_i_built:
+      "After the chip shortage and COVID supply chain chaos, I realized most investors have zero visibility into the supply chains behind their stocks. GeoZ makes geopolitical supply chain risk visible and actionable — turning open-source intelligence into investment signals.",
+    prompts: [
+      {
+        label: "Supply chain mapping prompt",
+        prompt:
+          "You are a supply chain intelligence analyst. Given a company ticker and name, map its key supply chain dependencies:\n\n1. Tier 1 suppliers (direct)\n2. Tier 2 suppliers (supplier's suppliers)\n3. Key geographic concentrations (countries/regions)\n4. Critical single-source dependencies\n5. Geopolitical risk factors for each geographic node\n\nCompany: {ticker} - {company_name}\n\nReturn as structured JSON with lat/lng coordinates for globe visualization.",
+        model: "Claude 3.5 Sonnet",
+      },
+      {
+        label: "Geopolitical event impact analysis",
+        prompt:
+          "Analyze this geopolitical event and determine its supply chain impact:\n\nEvent: {event_description}\nSource: {source}\n\nFor each affected supply chain:\n1. Which companies/sectors are impacted\n2. Severity (critical/high/medium/low)\n3. Geographic scope\n4. Estimated duration of disruption\n5. Alternative supply routes if any\n\nReturn structured JSON.",
+        model: "Claude 3.5 Sonnet",
+      },
+    ],
+    iterations: [
+      {
+        version: "v1",
+        what_changed: "Basic stock search with static supply chain data and flat map view",
+        result: "Proof of concept worked but the flat map was boring and hard to read.",
+      },
+      {
+        version: "v2",
+        what_changed: "Added Cobe-inspired interactive 3D globe, live event feed, and real-time OSINT from Telegram channels",
+        result: "Massive visual upgrade. The globe became the signature feature — people shared screenshots on Twitter.",
+      },
+      {
+        version: "v3",
+        what_changed: "Added portfolio view, geopolitical risk scoring, dark/light mode, and iOS app (Swift)",
+        result: "Full platform now. Web + mobile. Starting to get interest from institutional investors.",
+      },
+    ],
+    failures:
+      "Tried to auto-trade based on geopolitical signals — terrible idea, the signal-to-noise ratio was too low for automated execution. Also built a complex NLP pipeline for news analysis before realizing Claude could do it better with simple prompting. Threw away 2 weeks of custom NLP code.",
+    stack_tags: ["Next.js", "TypeScript", "Vercel", "Three.js", "Cobe", "Claude API", "Telegram API", "Swift"],
+    screenshots: [],
+    demo_html_url: null,
+    demo_link: "https://geo-z.vercel.app",
+    video_url: null,
+    metrics: [
+      { name: "Supply chains mapped", value: "500+", timeframe: "companies" },
+      { name: "OSINT sources", value: "50+", timeframe: "Telegram channels" },
+      { name: "Daily events processed", value: "200+", timeframe: "live" },
+    ],
+    lessons:
+      "3D visualization is a double-edged sword — it looks amazing in demos but can hurt usability if overdone. The globe works because it maps directly to the data (geographic supply chains). Don't use 3D just to be fancy. Also: Telegram is an underrated OSINT goldmine for geopolitical intelligence.",
+    github_repo_url: "https://github.com/Kevinscsatoshi/GeoZ",
+    github_repo_name: "GeoZ",
+    github_repo_description: "Supply chain intelligence platform with interactive globe visualization",
+    github_repo_language: "TypeScript",
+    github_repo_stars: 1,
+    github_repo_updated_at: "2026-03-19T15:16:38Z",
+    github_readme: null,
+    forked_from: null,
+    fork_description: null,
+    fork_count: 4,
+    view_count: 2800,
+    status: "published",
+    featured: true,
+    author: authors[3],
   },
 ];
 
