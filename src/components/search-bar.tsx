@@ -87,6 +87,9 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
   const panelClass = isHeader
     ? "absolute top-full right-0 mt-1 w-[min(22rem,calc(100vw-2rem))] z-50"
     : "absolute top-full left-0 right-0 mt-1 z-50";
+  const inputClass = isHeader
+    ? "flex-1 bg-transparent text-[17px] outline-none placeholder:text-muted/60"
+    : "flex-1 bg-transparent text-base outline-none placeholder:text-muted/60";
 
   return (
     <div
@@ -124,7 +127,7 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
             }}
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-base outline-none placeholder:text-muted/60"
+            className={inputClass}
           />
         </div>
 

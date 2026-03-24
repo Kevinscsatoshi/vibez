@@ -59,7 +59,7 @@ export function UserNav() {
     return (
       <Link
         href="/signin"
-        className="font-bitcount shrink-0 bg-foreground text-background px-3.5 sm:px-4.5 py-2 text-sm sm:text-base hover:opacity-90 transition-opacity whitespace-nowrap rounded-md"
+        className="font-bitcount shrink-0 bg-foreground text-background px-3.5 sm:px-4.5 py-2 text-[16px] sm:text-[17px] hover:opacity-90 transition-opacity whitespace-nowrap rounded-md"
       >
         {t("auth.signIn")}
       </Link>
@@ -78,13 +78,13 @@ export function UserNav() {
           alt={profile.display_name}
           className="h-9 w-9 rounded-full shrink-0"
         />
-        <span className="font-bitcount text-base hidden sm:inline truncate max-w-[140px]">
+        <span className="font-bitcount text-[17px] hidden sm:inline truncate max-w-[140px]">
           {profile.display_name}
         </span>
       </Link>
       <button
         onClick={handleSignOut}
-        className="font-bitcount text-sm text-muted hover:text-foreground transition-colors shrink-0"
+        className="font-bitcount text-[15px] text-muted hover:text-foreground transition-colors shrink-0"
       >
         {t("auth.signOut")}
       </button>

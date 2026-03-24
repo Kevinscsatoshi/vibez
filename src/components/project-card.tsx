@@ -5,6 +5,7 @@ import { LikeButton } from "@/components/like-button";
 interface ProjectCardProps {
   project: Project;
   liked?: boolean;
+  showPreview?: boolean;
 }
 
 function getVideoThumbnail(url: string | null): string | null {
@@ -30,7 +31,7 @@ function getVideoThumbnail(url: string | null): string | null {
   }
 }
 
-export function ProjectCard({ project, liked = false }: ProjectCardProps) {
+export function ProjectCard({ project, liked = false, showPreview = true }: ProjectCardProps) {
   const screenshot = project.screenshots[0] ?? null;
   const videoThumb = getVideoThumbnail(project.video_url);
   const previewImage = screenshot ?? videoThumb;
@@ -43,25 +44,27 @@ export function ProjectCard({ project, liked = false }: ProjectCardProps) {
         aria-label={project.title}
       />
       <div className="relative z-10 pointer-events-none">
-        <div className="mb-3">
-          {previewImage ? (
-            <div className="relative overflow-hidden rounded-md border border-border bg-tag-bg">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewImage}
-                alt={`${project.title} preview`}
-                className="h-40 w-full object-cover"
-              />
-              <span className="absolute right-2 top-2 rounded bg-black/65 px-1.5 py-0.5 text-[10px] text-white uppercase tracking-wide">
-                {screenshot ? "Image" : "Video"}
-              </span>
-            </div>
-          ) : (
-            <div className="h-40 w-full rounded-md border border-dashed border-border bg-tag-bg/40 flex items-center justify-center">
-              <span className="text-xs text-muted">No media preview</span>
-            </div>
-          )}
-        </div>
+        {showPreview && (
+          <div className="mb-3">
+            {previewImage ? (
+              <div className="relative overflow-hidden rounded-md border border-border bg-tag-bg">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={previewImage}
+                  alt={`${project.title} preview`}
+                  className="h-40 w-full object-cover"
+                />
+                <span className="absolute right-2 top-2 rounded bg-black/65 px-1.5 py-0.5 text-[10px] text-white uppercase tracking-wide">
+                  {screenshot ? "Image" : "Video"}
+                </span>
+              </div>
+            ) : (
+              <div className="h-40 w-full rounded-md border border-dashed border-border bg-tag-bg/40 flex items-center justify-center">
+                <span className="text-xs text-muted">No media preview</span>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="mb-3">
           <h3 className="font-semibold text-base leading-snug">{project.title}</h3>

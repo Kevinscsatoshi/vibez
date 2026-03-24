@@ -27,7 +27,8 @@ export async function GET(request: Request) {
   const authUrl = new URL("https://github.com/login/oauth/authorize");
   authUrl.searchParams.set("client_id", clientId);
   authUrl.searchParams.set("redirect_uri", redirectUri);
-  authUrl.searchParams.set("scope", "read:user repo");
+  // `admin:repo_hook` is required for automatic webhook setup on connected repos.
+  authUrl.searchParams.set("scope", "read:user repo admin:repo_hook");
   authUrl.searchParams.set("allow_signup", "true");
 
   return NextResponse.redirect(authUrl);

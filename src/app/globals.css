@@ -50,7 +50,7 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.6;
 }
 
@@ -72,8 +72,8 @@ body {
 }
 
 html {
-  /* Scale Tailwind rem-based text utilities globally for readability */
-  font-size: 18px;
+  /* Slightly reduce overall UI scale for content areas */
+  font-size: 16px;
 }
 
 /* Accent typeface for header user actions only */
@@ -120,6 +120,45 @@ html:lang(ko) .font-bitcount {
 
 .animate-dropdown-in {
   animation: dropdown-in 0.15s ease-out;
+}
+
+@keyframes loading-caret-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.app-loading-screen {
+  min-height: calc(100vh - 4rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+}
+
+.app-loading-wordmark {
+  display: inline-flex;
+  align-items: center;
+  color: var(--foreground);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.75rem, 6vw, 4.25rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.app-loading-caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 0.14em;
+  background: currentColor;
+  animation: loading-caret-blink 1s steps(1, end) infinite;
 }
 
 /* Markdown content styles */

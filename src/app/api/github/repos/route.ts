@@ -37,11 +37,29 @@ export async function GET() {
         })),
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : "repo_fetch_failed";
+    const isBadCredentials =
+      message.includes("GitHub API 401") || message.includes("Bad credentials");
+
+    if (isBadCredentials) {
+      // Access token was revoked/expired or OAuth app credentials changed.
+      // Remove stale connection so UI can prompt a clean reconnect flow.
+      await supabase.from("github_connections").delete().eq("user_id", user.id);
+      return NextResponse.json(
+        {
+          connected: false,
+          repos: [],
+          error: "github_reconnect_required",
+        },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
       {
         connected: true,
         repos: [],
-        error: error instanceof Error ? error.message : "repo_fetch_failed",
+        error: message,
       },
       { status: 500 }
     );

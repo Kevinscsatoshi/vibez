@@ -98,10 +98,19 @@ export async function ensureRepoWebhook(
   const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
   if (!appUrl || !webhookSecret) return null;
 
-  const existingHooks = await githubRequest<
-    Array<{ id: number; config?: { url?: string }; events?: string[] }>
-  >(`/repos/${repoFullName}/hooks`, accessToken);
   const targetUrl = `${appUrl}/api/github/webhook`;
+  let existingHooks: Array<{ id: number; config?: { url?: string }; events?: string[] }> =
+    [];
+  try {
+    existingHooks = await githubRequest<
+      Array<{ id: number; config?: { url?: string }; events?: string[] }>
+    >(`/repos/${repoFullName}/hooks`, accessToken);
+  } catch {
+    // Some tokens can read repo metadata but cannot manage/list webhooks.
+    // Webhook is best-effort and should never block publish flow.
+    return null;
+  }
+
   const existing = existingHooks.find((hook) => hook.config?.url === targetUrl);
   if (existing) return existing.id;
 

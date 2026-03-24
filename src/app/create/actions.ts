@@ -156,23 +156,16 @@ export async function publishProject(formData: FormData) {
 
       const token = await getCurrentUserGithubToken(user.id);
       if (token) {
-        try {
-          const webhookId = await ensureRepoWebhook(token, repoFullName);
-          if (webhookId) {
-            await supabase
-              .from("project_repo_links")
-              .update({ repo_webhook_id: webhookId })
-              .eq("project_id", project.id);
-          }
-          await syncProjectFromRepo(project.id, repoFullName, token, "initial_link_sync");
-        } catch (syncError) {
-          return {
-            error:
-              syncError instanceof Error
-                ? `repo_sync_failed:${syncError.message}`
-                : "repo_sync_failed",
-          };
+        const webhookId = await ensureRepoWebhook(token, repoFullName);
+        if (webhookId) {
+          await supabase
+            .from("project_repo_links")
+            .update({ repo_webhook_id: webhookId })
+            .eq("project_id", project.id);
         }
+
+        // Sync is best-effort: publish should still succeed even if GitHub API permissions are limited.
+        await syncProjectFromRepo(project.id, repoFullName, token, "initial_link_sync");
       }
     }
 

@@ -21,7 +21,7 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {featured.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.id} project={project} showPreview={false} />
           ))}
         </div>
       </section>
@@ -32,7 +32,7 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {trending.slice(0, 6).map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.id} project={project} showPreview={false} />
           ))}
         </div>
       </section>
@@ -43,7 +43,7 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {latest.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.id} project={project} showPreview={false} />
           ))}
         </div>
       </section>
