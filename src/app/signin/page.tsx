@@ -1,0 +1,176 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+
+type Mode = "signin" | "signup";
+
+export default function SignInPage() {
+  const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleGitHubSignIn = () => {
+    // In production: redirect to Supabase GitHub OAuth
+    // const supabase = createClient();
+    // supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: `${origin}/auth/callback` } });
+    setMessage("GitHub sign-in will be connected when Supabase is configured.");
+  };
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    // In production: call Supabase auth
+    // const supabase = createClient();
+    // if (mode === 'signup') {
+    //   await supabase.auth.signUp({ email, password, options: { data: { display_name: name } } });
+    // } else {
+    //   await supabase.auth.signInWithPassword({ email, password });
+    // }
+
+    setTimeout(() => {
+      setLoading(false);
+      if (mode === "signup") {
+        setMessage("Check your email for a confirmation link.");
+      } else {
+        setMessage("Sign-in will work when Supabase is configured.");
+      }
+    }, 800);
+  };
+
+  const canSubmit =
+    mode === "signin"
+      ? email && password
+      : email && password && name && password.length >= 6;
+
+  return (
+    <div className="mx-auto max-w-sm px-4 py-16">
+      <div className="mb-8 text-center">
+        <Link href="/" className="text-2xl font-bold tracking-tight">
+          vibe<span className="font-black">Z</span>
+        </Link>
+        <p className="mt-2 text-sm text-muted">
+          {mode === "signin"
+            ? "Sign in to your builder account"
+            : "Create your builder account"}
+        </p>
+      </div>
+
+      {/* GitHub OAuth */}
+      <button
+        onClick={handleGitHubSignIn}
+        className="w-full flex items-center justify-center gap-2 border border-border py-2.5 text-sm font-medium rounded-full hover:border-foreground/30 transition-colors mb-6"
+      >
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+        </svg>
+        Continue with GitHub
+      </button>
+
+      {/* Divider */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex-1 h-px bg-border" />
+        <span className="text-xs text-muted">or</span>
+        <div className="flex-1 h-px bg-border" />
+      </div>
+
+      {/* Email form */}
+      <form onSubmit={handleEmailSubmit} className="space-y-4">
+        {mode === "signup" && (
+          <div>
+            <label className="block text-xs font-medium text-muted mb-1.5">
+              Display name
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:border-foreground/30 transition-colors rounded-xl"
+              placeholder="Your name"
+              maxLength={50}
+            />
+          </div>
+        )}
+
+        <div>
+          <label className="block text-xs font-medium text-muted mb-1.5">
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:border-foreground/30 transition-colors rounded-xl"
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-muted mb-1.5">
+            Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:border-foreground/30 transition-colors rounded-xl"
+            placeholder={mode === "signup" ? "At least 6 characters" : "Your password"}
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={!canSubmit || loading}
+          className={`w-full py-2.5 text-sm font-medium rounded-full transition-opacity ${
+            canSubmit && !loading
+              ? "bg-foreground text-background hover:opacity-90"
+              : "bg-border text-muted cursor-not-allowed"
+          }`}
+        >
+          {loading
+            ? "..."
+            : mode === "signin"
+            ? "Sign in"
+            : "Create account"}
+        </button>
+      </form>
+
+      {/* Message */}
+      {message && (
+        <p className="mt-4 text-xs text-center text-muted bg-tag-bg px-3 py-2 rounded-xl">
+          {message}
+        </p>
+      )}
+
+      {/* Toggle mode */}
+      <p className="mt-6 text-xs text-center text-muted">
+        {mode === "signin" ? (
+          <>
+            Don&apos;t have an account?{" "}
+            <button
+              onClick={() => { setMode("signup"); setMessage(""); }}
+              className="text-foreground font-medium hover:underline"
+            >
+              Sign up
+            </button>
+          </>
+        ) : (
+          <>
+            Already have an account?{" "}
+            <button
+              onClick={() => { setMode("signin"); setMessage(""); }}
+              className="text-foreground font-medium hover:underline"
+            >
+              Sign in
+            </button>
+          </>
+        )}
+      </p>
+    </div>
+  );
+}
