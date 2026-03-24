@@ -24,14 +24,17 @@ export interface Project {
   github_repo_stars: number | null;
   github_repo_updated_at: string | null;
   github_readme: string | null;
+  snippet_id?: string | null;
   forked_from: string | null;
   fork_description: string | null;
   fork_count: number;
   view_count: number;
+  like_count: number;
   status: "draft" | "pending" | "published";
   featured: boolean;
   // joined fields
   author?: Profile;
+  snippet?: Pick<Snippet, "id" | "title" | "is_public" | "author_id"> | null;
   parent_project?: Pick<Project, "id" | "title" | "author"> | null;
 }
 
@@ -55,13 +58,32 @@ export interface Metric {
 
 export interface Profile {
   id: string;
-  github_username: string;
+  github_username: string | null;
   display_name: string;
   avatar_url: string;
   avatar_source: "github" | "preset";
   avatar_preset_id: string | null;
   gender: "male" | "female" | null;
   bio: string | null;
-  github_url: string;
+  github_url: string | null;
   created_at: string;
+}
+
+export interface ProjectLike {
+  user_id: string;
+  project_id: string;
+  created_at: string;
+}
+
+export interface Snippet {
+  id: string;
+  author_id: string | null;
+  title: string;
+  html: string;
+  css: string;
+  js: string;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+  author?: Profile;
 }

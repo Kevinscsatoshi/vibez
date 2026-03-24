@@ -32,6 +32,7 @@ interface FormData {
   stack_tags: string[];
   demo_link: string;
   video_url: string;
+  snippet_id: string;
   metrics: Metric[];
   lessons: string;
 }
@@ -56,6 +57,7 @@ const INITIAL_FORM: FormData = {
   stack_tags: [],
   demo_link: "",
   video_url: "",
+  snippet_id: "",
   metrics: [],
   lessons: "",
 };
@@ -126,6 +128,16 @@ export default function CreatePage() {
 
   const removeMetric = (index: number) => {
     updateField("metrics", form.metrics.filter((_, i) => i !== index));
+  };
+
+  const normalizeSnippetId = (value: string) => {
+    const raw = value.trim();
+    if (!raw) return "";
+    if (!raw.includes("/")) return raw;
+    const parts = raw.split("/").filter(Boolean);
+    const idx = parts.findIndex((p) => p === "playground");
+    if (idx >= 0 && parts[idx + 1]) return parts[idx + 1];
+    return raw;
   };
 
   const canAdvance = () => {
@@ -403,6 +415,27 @@ export default function CreatePage() {
               placeholder="https://youtube.com/watch?v=..."
             />
           </div>
+
+          <div>
+            <label className={labelClass}>
+              Playground snippet (optional — snippet ID or /playground URL)
+            </label>
+            <input
+              className={inputClass}
+              value={form.snippet_id}
+              onChange={(e) =>
+                updateField("snippet_id", normalizeSnippetId(e.target.value))
+              }
+              placeholder="9ec8f5db-... or https://.../playground/9ec8f5db-..."
+            />
+            <p className="mt-1 text-xs text-muted">
+              Tip: create/edit snippets in{" "}
+              <Link href="/playground" className="text-accent underline">
+                Playground
+              </Link>{" "}
+              and paste the snippet ID here.
+            </p>
+          </div>
         </div>
       )}
 
@@ -482,7 +515,18 @@ export default function CreatePage() {
               {form.prompts.length} prompt(s) &middot;{" "}
               {form.iterations.length} iteration(s)
               {form.metrics.length > 0 && ` \u00b7 ${form.metrics.length} metric(s)`}
+              {form.snippet_id && " \u00b7 playground linked"}
             </div>
+            {form.snippet_id && (
+              <div className="mt-2">
+                <Link
+                  href={`/playground/${form.snippet_id}`}
+                  className="text-xs text-accent underline"
+                >
+                  Preview linked playground &rarr;
+                </Link>
+              </div>
+            )}
           </div>
 
           <div>

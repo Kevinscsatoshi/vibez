@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { SearchBar } from "@/components/search-bar";
+import { UserNav } from "@/components/user-nav";
 import type { Project } from "@/types/database";
 
 export function Header({ projects }: { projects: Project[] }) {
@@ -26,14 +27,12 @@ export function Header({ projects }: { projects: Project[] }) {
             <Link href="/create" className="text-muted hover:text-foreground transition-colors">
               Publish
             </Link>
+            <Link href="/playground" className="text-muted hover:text-foreground transition-colors">
+              Playground
+            </Link>
           </nav>
           <SearchBar projects={projects} variant="header" />
-          <Link
-            href="/signin"
-            className="shrink-0 bg-foreground text-background px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium hover:opacity-90 transition-opacity whitespace-nowrap rounded-md"
-          >
-            Sign in
-          </Link>
+          <UserNav />
         </div>
       </div>
     </header>

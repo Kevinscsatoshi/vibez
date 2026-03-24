@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# vibeZ
 
-## Getting Started
+Builder network for AI project shipping stories, now with Supabase auth and playground snippets.
 
-First, run the development server:
+## Local Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Configure environment variables in `.env.local`:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+3. Start dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Auth + Callback Notes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Email/password and GitHub OAuth are both enabled on `/signin`.
+- OAuth callback route: `/auth/callback`.
+- `next` query parameter is sanitized to in-app paths only.
+- In production, set `NEXT_PUBLIC_APP_URL` to your public domain so OAuth callbacks always return to the correct host.
 
-## Learn More
+## Local 404 Quick Diagnosis
 
-To learn more about Next.js, take a look at the following resources:
+If you see `ERR_CONNECTION_REFUSED` or a local 404:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Dev server status**: rerun `npm run dev` and confirm `Ready`.
+2. **Port conflict**: check output for auto-switch to `3001`/other port.
+3. **Wrong URL**: ensure your browser uses the active port shown by Next.
+4. **Env mismatch**: verify `.env.local` values are real (not placeholders).
+5. **Build cache issue**: stop server, delete `.next`, restart `npm run dev`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Playground Integration (V1)
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `projects.snippet_id` links one project to one playground snippet.
+- Create flow accepts snippet ID or `/playground/:id` URL.
+- Project cards and project detail pages surface linked playground entry points.

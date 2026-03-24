@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -19,18 +19,48 @@ export default function SignInPage() {
   const [error, setError] = useState("");
 
   const supabase = createClient();
+  const getAppOrigin = () => {
+    const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
+    if (configured) {
+      return configured.replace(/\/+$/, "");
+    }
+    if (typeof window === "undefined") return "";
+    return window.location.origin;
+  };
+
+  const toSafeNextPath = (raw: string | null) => {
+    if (!raw) return "/";
+    // Only allow in-app relative paths like "/profile/123".
+    if (raw.startsWith("/") && !raw.startsWith("//")) return raw;
+    return "/";
+  };
+
   const getNextPath = () => {
     if (typeof window === "undefined") return "/";
     const params = new URLSearchParams(window.location.search);
-    return params.get("next") ?? "/";
+    return toSafeNextPath(params.get("next"));
   };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const errorCode = params.get("error");
+    if (!errorCode) return;
+    if (errorCode === "auth_callback_failed") {
+      setError("GitHub callback failed. Please retry the sign-in flow.");
+      return;
+    }
+    if (errorCode === "missing_auth_code") {
+      setError("Missing auth code in callback. Please sign in again.");
+    }
+  }, []);
 
   const handleGitHubSignIn = async () => {
     setLoading(true);
     setError("");
-    setMessage("");
+    setMessage("Redirecting to GitHub...");
     const nextPath = getNextPath();
-    const origin = window.location.origin;
+    const origin = getAppOrigin();
     const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "github",
@@ -40,6 +70,7 @@ export default function SignInPage() {
     });
 
     if (oauthError) {
+      setMessage("");
       setError(oauthError.message);
       setLoading(false);
     }
@@ -53,7 +84,7 @@ export default function SignInPage() {
     const nextPath = getNextPath();
 
     if (mode === "signup") {
-      const origin = window.location.origin;
+      const origin = getAppOrigin();
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,

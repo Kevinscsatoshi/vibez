@@ -3,12 +3,34 @@
 import { useState } from "react";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { PresetAvatar } from "@/lib/avatars";
+import { completeOnboarding } from "./actions";
 
 export default function OnboardingPage() {
   const [selectedAvatar, setSelectedAvatar] = useState<PresetAvatar | null>(null);
   const [displayName, setDisplayName] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const canContinue = selectedAvatar && displayName.trim().length >= 2;
+
+  const handleSubmit = async () => {
+    if (!canContinue || !selectedAvatar) return;
+    setLoading(true);
+    setError("");
+
+    const formData = new FormData();
+    formData.set("displayName", displayName.trim());
+    formData.set("avatarPresetId", selectedAvatar.id);
+    formData.set("avatarUrl", selectedAvatar.url);
+    formData.set("gender", selectedAvatar.gender);
+
+    try {
+      await completeOnboarding(formData);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">
@@ -60,16 +82,24 @@ export default function OnboardingPage() {
         </div>
       )}
 
+      {/* Error */}
+      {error && (
+        <p className="mb-4 text-xs text-center text-red-600 bg-red-50 px-3 py-2 rounded-xl">
+          {error}
+        </p>
+      )}
+
       {/* Continue button */}
       <button
-        disabled={!canContinue}
+        disabled={!canContinue || loading}
+        onClick={handleSubmit}
         className={`w-full py-3 text-sm font-medium rounded-full transition-opacity ${
-          canContinue
+          canContinue && !loading
             ? "bg-foreground text-background hover:opacity-90"
             : "bg-border text-muted cursor-not-allowed"
         }`}
       >
-        Complete Setup
+        {loading ? "Saving..." : "Complete Setup"}
       </button>
 
       <p className="mt-3 text-xs text-muted text-center">

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single+Ink:wght@100..900&display=swap");
 @import "tailwindcss";
 
 /* Notion-like neutrals: warm canvas, crisp surfaces, minimal accent */
@@ -33,6 +34,15 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+/* Accent typeface for header user actions only */
+.font-bitcount {
+  font-family: "Bitcount Prop Single Ink", var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: "wght" 520;
+  letter-spacing: 0.01em;
 }
 
 @keyframes dropdown-in {

@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  const nextParam = searchParams.get("next");
+  const next =
+    nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")
+      ? nextParam
+      : "/";
 
   if (code) {
     const supabase = await createClient();
@@ -12,8 +16,11 @@ export async function GET(request: Request) {
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
+    return NextResponse.redirect(
+      `${origin}/signin?error=auth_callback_failed`
+    );
   }
 
-  // Return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/?error=auth`);
+  // Return user to sign in with clear status.
+  return NextResponse.redirect(`${origin}/signin?error=missing_auth_code`);
 }
