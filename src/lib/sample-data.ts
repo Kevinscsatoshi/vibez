@@ -582,6 +582,10 @@ export const sampleProjects: Project[] = [
   },
 ];
 
+export function getAllProjects(): Project[] {
+  return sampleProjects;
+}
+
 export function getProjectById(id: string): Project | undefined {
   return sampleProjects.find((p) => p.id === id);
 }

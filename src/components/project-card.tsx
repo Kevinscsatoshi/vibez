@@ -5,7 +5,7 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/project/${project.id}`}
-      className="block border border-border bg-surface p-5 rounded-2xl hover:border-foreground/20 transition-colors"
+      className="group block border border-border bg-surface p-4 rounded-md hover:bg-tag-bg/80 transition-colors"
     >
       <div className="mb-3">
         <h3 className="font-semibold text-base leading-snug">{project.title}</h3>
@@ -16,7 +16,7 @@ export function ProjectCard({ project }: { project: Project }) {
         {project.stack_tags.slice(0, 4).map((tag) => (
           <span
             key={tag}
-            className="bg-tag-bg text-tag-text px-2 py-0.5 text-xs rounded-full"
+            className="bg-tag-bg text-tag-text px-2 py-0.5 text-xs rounded"
           >
             {tag}
           </span>
@@ -47,7 +47,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <span className="whitespace-nowrap">{project.fork_count} forks</span>
         )}
         {project.github_repo_url && (
-          <span className="border border-border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide rounded-full whitespace-nowrap">
+          <span className="border border-border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide rounded whitespace-nowrap">
             GitHub
           </span>
         )}

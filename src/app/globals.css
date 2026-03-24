@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
+/* Notion-like neutrals: warm canvas, crisp surfaces, minimal accent */
 :root {
-  --background: #fafafa;
-  --foreground: #111111;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
+  --background: #f7f7f5;
+  --foreground: #37352f;
+  --muted: #737373;
+  --border: #e6e6e4;
+  --accent: #2383e2;
+  --accent-hover: #1a6bc7;
   --surface: #ffffff;
-  --tag-bg: #f3f4f6;
-  --tag-text: #374151;
-  --success: #059669;
+  --tag-bg: #f1f1ef;
+  --tag-text: #37352f;
+  --success: #0f7b6c;
 }
 
 @theme inline {
@@ -29,9 +30,24 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-dropdown-in {
+  animation: dropdown-in 0.15s ease-out;
 }
 
 /* Markdown content styles */
@@ -46,14 +62,14 @@ body {
   font-family: var(--font-geist-mono), monospace;
   background: var(--tag-bg);
   padding: 0.15rem 0.4rem;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 0.9em;
 }
 .markdown-content pre {
   background: #1e1e1e;
   color: #d4d4d4;
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: 6px;
   overflow-x: auto;
   margin-bottom: 1rem;
 }
@@ -71,6 +87,7 @@ body {
 .markdown-content a {
   color: var(--accent);
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 .markdown-content table {
   width: 100%;
