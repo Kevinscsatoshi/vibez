@@ -26,31 +26,31 @@ export function ProjectCard({ project }: { project: Project }) {
         )}
       </div>
 
-      <div className="flex items-center justify-between text-xs text-muted">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3 text-xs text-muted">
+        <div className="flex items-center gap-2 min-w-0 shrink-0">
           {project.author && (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={project.author.avatar_url}
                 alt={project.author.display_name}
-                className="h-5 w-5 rounded-full"
+                className="h-5 w-5 rounded-full shrink-0"
               />
-              <span>{project.author.display_name}</span>
+              <span className="truncate">{project.author.display_name}</span>
             </>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ml-auto shrink-0">
           {project.metrics.length > 0 && (
-            <span className="text-success font-medium">
+            <span className="text-success font-medium whitespace-nowrap">
               {project.metrics[0].value} {project.metrics[0].name.toLowerCase()}
             </span>
           )}
           {project.fork_count > 0 && (
-            <span>{project.fork_count} forks</span>
+            <span className="whitespace-nowrap">{project.fork_count} forks</span>
           )}
           {project.github_repo_url && (
-            <span className="border border-border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide rounded-full">
+            <span className="border border-border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide rounded-full whitespace-nowrap">
               GitHub
             </span>
           )}
