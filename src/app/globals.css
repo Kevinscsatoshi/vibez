@@ -50,8 +50,8 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  font-size: 17px;
-  line-height: 1.55;
+  font-size: 18px;
+  line-height: 1.6;
 }
 
 html:lang(zh) body {
@@ -69,6 +69,11 @@ html:lang(ko) body {
 html,
 body {
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html {
+  /* Scale Tailwind rem-based text utilities globally for readability */
+  font-size: 18px;
 }
 
 /* Accent typeface for header user actions only */

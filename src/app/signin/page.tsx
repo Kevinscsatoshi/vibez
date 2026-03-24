@@ -15,6 +15,7 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -39,6 +40,26 @@ export default function SignInPage() {
     if (typeof window === "undefined") return "/";
     const params = new URLSearchParams(window.location.search);
     return toSafeNextPath(params.get("next"));
+  };
+
+  const formatAuthError = (raw: string) => {
+    const msg = raw.toLowerCase();
+    if (msg.includes("email rate limit")) {
+      return "Email sending is rate-limited. Please wait a minute and try again.";
+    }
+    if (msg.includes("invalid email")) {
+      return "This email format looks invalid. Please check and try again.";
+    }
+    if (msg.includes("smtp")) {
+      return "Email delivery is currently unavailable (SMTP issue). Please retry later.";
+    }
+    if (msg.includes("user already registered")) {
+      return "This email is already registered. Try signing in or reset password.";
+    }
+    if (msg.includes("signup is disabled")) {
+      return "Email sign-up is currently disabled by server configuration.";
+    }
+    return raw;
   };
 
   useEffect(() => {
@@ -98,9 +119,9 @@ export default function SignInPage() {
 
       setLoading(false);
       if (signUpError) {
-        setError(signUpError.message);
+        setError(formatAuthError(signUpError.message));
       } else {
-        setMessage("Check your email for a confirmation link.");
+        setMessage(`Confirmation email sent to ${email}.`);
       }
       return;
     }
@@ -112,12 +133,36 @@ export default function SignInPage() {
 
     setLoading(false);
     if (signInError) {
-      setError(signInError.message);
+      setError(formatAuthError(signInError.message));
       return;
     }
 
     router.push(nextPath);
     router.refresh();
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      setError("Please enter your email first.");
+      return;
+    }
+    setResending(true);
+    setError("");
+    const origin = getAppOrigin();
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo: `${origin}/auth/callback?next=/onboarding`,
+      },
+    });
+    setResending(false);
+
+    if (resendError) {
+      setError(formatAuthError(resendError.message));
+      return;
+    }
+    setMessage(`Confirmation email resent to ${email}.`);
   };
 
   const canSubmit =
@@ -229,9 +274,21 @@ export default function SignInPage() {
 
       {/* Message */}
       {message && (
-        <p className="mt-4 text-xs text-center text-muted bg-tag-bg px-3 py-2 rounded-xl">
-          {message}
-        </p>
+        <div className="mt-4 rounded-xl bg-tag-bg px-3 py-2">
+          <p className="text-xs text-center text-muted">{message}</p>
+          {mode === "signup" && (
+            <div className="mt-2 text-center">
+              <button
+                type="button"
+                onClick={handleResendConfirmation}
+                disabled={resending || loading}
+                className="text-xs text-foreground hover:underline disabled:text-muted disabled:no-underline"
+              >
+                {resending ? "Resending..." : "Resend confirmation email"}
+              </button>
+            </div>
+          )}
+        </div>
       )}
       {error && (
         <p className="mt-4 text-xs text-center text-red-600 bg-red-50 px-3 py-2 rounded-xl">

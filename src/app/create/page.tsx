@@ -71,35 +71,35 @@ type ModelBrand = {
 const BRAND_LOGOS: Record<string, ModelBrand> = {
   openai: {
     company: "OpenAI",
-    logoUrl: "https://cdn.simpleicons.org/openai/FFFFFF",
+    logoUrl: "/brand-logos/openai.svg",
   },
-  anthropic: {
-    company: "Anthropic",
-    logoUrl: "https://cdn.simpleicons.org/anthropic/FFFFFF",
+  claude: {
+    company: "Claude",
+    logoUrl: "/brand-logos/claude.svg",
   },
   google: {
     company: "Google",
-    logoUrl: "https://cdn.simpleicons.org/google/FFFFFF",
+    logoUrl: "/brand-logos/google.svg",
   },
   deepseek: {
     company: "DeepSeek",
-    logoUrl: "https://cdn.simpleicons.org/deepseek/FFFFFF",
+    logoUrl: "/brand-logos/deepseek.svg",
   },
   meta: {
     company: "Meta",
-    logoUrl: "https://cdn.simpleicons.org/meta/FFFFFF",
+    logoUrl: "/brand-logos/meta.svg",
   },
   alibaba: {
     company: "Alibaba",
-    logoUrl: "https://cdn.simpleicons.org/alibabacloud/FFFFFF",
+    logoUrl: "/brand-logos/alibaba.svg",
   },
   mistral: {
     company: "Mistral",
-    logoUrl: "https://cdn.simpleicons.org/mistralai/FFFFFF",
+    logoUrl: "/brand-logos/mistral.svg",
   },
   xai: {
     company: "xAI",
-    logoUrl: "https://cdn.simpleicons.org/x/FFFFFF",
+    logoUrl: "/brand-logos/xai.svg",
   },
 };
 
@@ -108,7 +108,7 @@ function inferBrandByModel(model: string): ModelBrand {
   if (lower.includes("gpt") || lower.includes("o3") || lower.includes("o4")) {
     return BRAND_LOGOS.openai;
   }
-  if (lower.includes("claude")) return BRAND_LOGOS.anthropic;
+  if (lower.includes("claude")) return BRAND_LOGOS.claude;
   if (lower.includes("gemini")) return BRAND_LOGOS.google;
   if (lower.includes("deepseek")) return BRAND_LOGOS.deepseek;
   if (lower.includes("llama")) return BRAND_LOGOS.meta;
