@@ -12,10 +12,10 @@ export default function HomePage() {
   const latest = getLatestProjects();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
       {/* Hero */}
-      <section className="mb-16 max-w-2xl">
-        <h1 className="text-3xl font-bold tracking-tight leading-tight">
+      <section className="mb-16 max-w-2xl lg:max-w-3xl">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
           See what AI builders are actually shipping.
         </h1>
         <p className="mt-3 text-base text-muted leading-relaxed">
@@ -43,7 +43,7 @@ export default function HomePage() {
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4">
           Featured Projects
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {featured.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
@@ -55,7 +55,7 @@ export default function HomePage() {
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4">
           Trending
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {trending.slice(0, 6).map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
@@ -67,7 +67,7 @@ export default function HomePage() {
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4">
           Latest Builds
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {latest.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}

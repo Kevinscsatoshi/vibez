@@ -24,7 +24,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
   const totalForks = projects.reduce((sum, p) => sum + p.fork_count, 0);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
       {/* Profile header */}
       <div className="flex items-start gap-5 mb-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -71,7 +71,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
         Projects
       </h2>
       {projects.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {projects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
