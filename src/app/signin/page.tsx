@@ -176,13 +176,13 @@ export default function SignInPage() {
         <Link href="/" className="inline-flex flex-col items-center gap-2">
           <Image
             src="/logo.svg"
-            alt="vibeZ"
+              alt="VibeZ"
             width={48}
             height={48}
             className="brand-logo"
           />
           <span className="text-2xl font-bold tracking-tight">
-            vibe<span className="font-black">Z</span>
+            Vibe<span className="font-black">Z</span>
           </span>
         </Link>
         <p className="mt-2 text-sm text-muted">

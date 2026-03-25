@@ -1,6 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-admin";
+import { isUuid } from "@/lib/is-uuid";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -50,4 +52,81 @@ export async function updateProfile(formData: FormData) {
 
   revalidatePath("/profile/me");
   revalidatePath(`/profile/${user.id}`);
+}
+
+export async function deletePublishedProject(projectId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "not_authenticated" as const };
+  }
+  if (!isUuid(projectId)) {
+    return { error: "invalid_project_id" as const };
+  }
+
+  const { data: project } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", projectId)
+    .eq("author_id", user.id)
+    .maybeSingle();
+
+  if (!project) {
+    return { error: "not_found_or_forbidden" as const };
+  }
+
+  try {
+    const admin = createAdminClient();
+
+    const { data: files } = await admin
+      .from("project_files")
+      .select("path")
+      .eq("project_id", projectId);
+
+    const filePaths =
+      (files ?? [])
+        .map((row) => row.path)
+        .filter((path): path is string => Boolean(path)) ?? [];
+
+    if (filePaths.length > 0) {
+      const { error: storageRemoveError } = await admin.storage
+        .from("project-assets")
+        .remove(filePaths);
+      if (storageRemoveError) {
+        return { error: `delete_assets_failed:${storageRemoveError.message}` as const };
+      }
+    }
+
+    await admin.from("project_likes").delete().eq("project_id", projectId);
+    await admin.from("project_sync_events").delete().eq("project_id", projectId);
+    await admin.from("project_repo_links").delete().eq("project_id", projectId);
+    await admin.from("project_files").delete().eq("project_id", projectId);
+
+    const { error: deleteProjectError } = await admin
+      .from("projects")
+      .delete()
+      .eq("id", projectId)
+      .eq("author_id", user.id);
+
+    if (deleteProjectError) {
+      return { error: `delete_project_failed:${deleteProjectError.message}` as const };
+    }
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? (`delete_failed:${error.message}` as const)
+          : ("delete_failed:unknown" as const),
+    };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/profile/me");
+  revalidatePath(`/profile/${user.id}`);
+  revalidatePath(`/project/${projectId}`);
+
+  return { ok: true as const };
 }

@@ -1,12 +1,14 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import Link from "next/link";
 import { ProfileForm } from "./profile-form";
+import { DeleteProjectButton } from "./delete-project-button";
 import type { Profile, Project } from "@/types/database";
-import { ProjectCard } from "@/components/project-card";
+import { RecipeCard } from "@/components/recipe-card";
 
 export const metadata: Metadata = {
-  title: "Edit Profile — vibeZ",
+  title: "Edit Profile — VibeZ",
 };
 
 export default async function ProfileSettingsPage() {
@@ -29,34 +31,35 @@ export default async function ProfileSettingsPage() {
     redirect("/onboarding");
   }
 
-  const { data: likedProjectsRows } = await supabase
-    .from("project_likes")
-    .select("projects:project_id(*, author:profiles(*))")
+  // Saved recipes (replaces liked projects)
+  const { data: savedRows } = await supabase
+    .from("recipe_saves")
+    .select("recipe_id")
     .eq("user_id", user.id);
+
+  let savedRecipes: Project[] = [];
+  if (savedRows && savedRows.length > 0) {
+    const ids = savedRows.map((s) => s.recipe_id);
+    const { data } = await supabase
+      .from("projects")
+      .select("*, author:profiles(*)")
+      .in("id", ids)
+      .eq("status", "published");
+    if (data) savedRecipes = data as Project[];
+  }
 
   const { data: ownProjectsRows } = await supabase
     .from("projects")
     .select("*, author:profiles(*)")
     .eq("author_id", user.id)
     .eq("status", "published")
-    .order("like_count", { ascending: false });
+    .order("created_at", { ascending: false });
 
-  const likedProjects = (
-    likedProjectsRows
-      ?.map((row) => {
-        const linked = (row as Record<string, unknown>).projects;
-        if (Array.isArray(linked)) {
-          return (linked[0] as Project | undefined) ?? null;
-        }
-        return (linked as Project | null) ?? null;
-      })
-      .filter(Boolean) ?? []
-  ) as Project[];
-
-  const ownProjects = ((ownProjectsRows ?? []).filter(Boolean) as Project[]).filter(
+  const ownRecipes = ((ownProjectsRows ?? []).filter(Boolean) as Project[]).filter(
     (project) => project.status === "published"
   );
-  const favoritedProjects = ownProjects.filter((project) => (project.like_count ?? 0) > 0);
+
+  const totalCompletions = ownRecipes.reduce((sum, p) => sum + (p.completion_count ?? 0), 0);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
@@ -67,16 +70,16 @@ export default async function ProfileSettingsPage() {
         </div>
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-[11px] uppercase tracking-wide text-muted">Liked</p>
-            <p className="mt-1 text-xl font-semibold">{likedProjects.length}</p>
+            <p className="text-[11px] uppercase tracking-wide text-muted">Saved</p>
+            <p className="mt-1 text-xl font-semibold">{savedRecipes.length}</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-[11px] uppercase tracking-wide text-muted">Favorited</p>
-            <p className="mt-1 text-xl font-semibold">{favoritedProjects.length}</p>
+            <p className="text-[11px] uppercase tracking-wide text-muted">Completions</p>
+            <p className="mt-1 text-xl font-semibold">{totalCompletions}</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
             <p className="text-[11px] uppercase tracking-wide text-muted">Published</p>
-            <p className="mt-1 text-xl font-semibold">{ownProjects.length}</p>
+            <p className="mt-1 text-xl font-semibold">{ownRecipes.length}</p>
           </div>
         </div>
         <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
@@ -88,26 +91,32 @@ export default async function ProfileSettingsPage() {
         <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold tracking-wide">Liked Projects</h2>
+              <h2 className="text-sm font-semibold tracking-wide">My Recipes</h2>
               <p className="text-xs text-muted mt-1">
-                Projects you personally liked or bookmarked.
+                Recipes you have published.
               </p>
             </div>
             <span className="rounded-full border border-border bg-tag-bg px-2.5 py-1 text-xs text-muted">
-              {likedProjects.length}
+              {ownRecipes.length}
             </span>
           </div>
-          {likedProjects.length > 0 ? (
+          {ownRecipes.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {likedProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} liked />
+              {ownRecipes.map((project) => (
+                <div key={project.id}>
+                  <RecipeCard project={project} />
+                  <DeleteProjectButton projectId={project.id} />
+                </div>
               ))}
             </div>
           ) : (
             <div className="rounded-xl border border-dashed border-border bg-tag-bg/40 p-6 text-center">
               <p className="text-sm text-muted">
-                You haven&apos;t liked any projects yet.
+                You haven&apos;t shared any recipes yet.
               </p>
+              <Link href="/create" className="mt-2 inline-block text-xs text-accent underline">
+                Share your first recipe
+              </Link>
             </div>
           )}
         </section>
@@ -115,26 +124,29 @@ export default async function ProfileSettingsPage() {
         <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold tracking-wide">Favorited Projects</h2>
+              <h2 className="text-sm font-semibold tracking-wide">Saved Recipes</h2>
               <p className="text-xs text-muted mt-1">
-                Your published projects that other users have liked.
+                Recipes you saved to try later.
               </p>
             </div>
             <span className="rounded-full border border-border bg-tag-bg px-2.5 py-1 text-xs text-muted">
-              {favoritedProjects.length}
+              {savedRecipes.length}
             </span>
           </div>
-          {favoritedProjects.length > 0 ? (
+          {savedRecipes.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {favoritedProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+              {savedRecipes.map((project) => (
+                <RecipeCard key={project.id} project={project} />
               ))}
             </div>
           ) : (
             <div className="rounded-xl border border-dashed border-border bg-tag-bg/40 p-6 text-center">
               <p className="text-sm text-muted">
-                No favorites yet on your published projects.
+                You haven&apos;t saved any recipes yet.
               </p>
+              <Link href="/browse" className="mt-2 inline-block text-xs text-accent underline">
+                Browse recipes
+              </Link>
             </div>
           )}
         </section>

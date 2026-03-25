@@ -1,5 +1,21 @@
 import { Project, Profile } from "@/types/database";
 
+const RECIPE_DEFAULTS = {
+  difficulty: null as Project["difficulty"],
+  coding_required: null as Project["coding_required"],
+  estimated_time: null,
+  who_is_this_for: [] as string[],
+  category: null,
+  cost_estimate: null,
+  outcome_description: null,
+  required_tools: [] as Project["required_tools"],
+  steps: [] as Project["steps"],
+  common_failures: [] as Project["common_failures"],
+  completion_count: 0,
+  save_count: 0,
+  remix_count: 0,
+};
+
 const authors: Profile[] = [
   {
     id: "user-1",
@@ -12,6 +28,7 @@ const authors: Profile[] = [
     bio: "Full-stack dev building AI tools. Previously at Stripe.",
     github_url: "https://github.com/sarahbuilds",
     created_at: "2026-01-15T00:00:00Z",
+    persona: null,
   },
   {
     id: "user-2",
@@ -24,6 +41,7 @@ const authors: Profile[] = [
     bio: "Indie hacker. Shipping AI micro-SaaS products.",
     github_url: "https://github.com/marcusai",
     created_at: "2026-02-01T00:00:00Z",
+    persona: null,
   },
   {
     id: "user-3",
@@ -36,6 +54,7 @@ const authors: Profile[] = [
     bio: "AI product designer turned builder.",
     github_url: "https://github.com/emmadev",
     created_at: "2026-02-10T00:00:00Z",
+    persona: null,
   },
   {
     id: "user-admin",
@@ -48,6 +67,7 @@ const authors: Profile[] = [
     bio: "Builder & founder. Shipping AI-powered tools at the intersection of finance, geopolitics, and prediction markets.",
     github_url: "https://github.com/Kevinscsatoshi",
     created_at: "2026-01-01T00:00:00Z",
+    persona: null,
   },
 ];
 
@@ -92,7 +112,7 @@ export const sampleProjects: Project[] = [
       "Initially tried to build a full trading interface with order placement — way too complex for an MVP. Stripped it back to read-only market monitoring with news context, which is what users actually wanted. Also experimented with auto-generated trading signals but the liability risk wasn't worth it.",
     stack_tags: ["Next.js", "TypeScript", "Vercel", "Polymarket API", "Claude API", "Tailwind CSS"],
     screenshots: [
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80",
+      "https://api.dicebear.com/9.x/shapes/svg?seed=polymarket-radar&backgroundColor=c0aede,b6e3f4&shape1Color=0a5b83,1c799f&shape2Color=69d2e7,a7dbd8&shape3Color=e0e4cc,f38630&size=600",
     ],
     demo_html_url: null,
     demo_link: "https://newz.beer",
@@ -117,6 +137,12 @@ export const sampleProjects: Project[] = [
     like_count: 0,
     status: "published",
     featured: true,
+    ...RECIPE_DEFAULTS,
+    difficulty: "advanced",
+    coding_required: "heavy",
+    estimated_time: "1 weekend",
+    who_is_this_for: ["developer", "founder"],
+    category: "data-tool",
     author: authors[3],
   },
   {
@@ -165,7 +191,7 @@ export const sampleProjects: Project[] = [
       "Tried to auto-trade based on geopolitical signals — terrible idea, the signal-to-noise ratio was too low for automated execution. Also built a complex NLP pipeline for news analysis before realizing Claude could do it better with simple prompting. Threw away 2 weeks of custom NLP code.",
     stack_tags: ["Next.js", "TypeScript", "Vercel", "Three.js", "Cobe", "Claude API", "Telegram API", "Swift"],
     screenshots: [
-      "https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?auto=format&fit=crop&w=1400&q=80",
+      "https://api.dicebear.com/9.x/shapes/svg?seed=supply-chain-globe&backgroundColor=d1d4f9,c0aede&shape1Color=4a90d9,6c5ce7&shape2Color=a29bfe,74b9ff&shape3Color=dfe6e9,b2bec3&size=600",
     ],
     demo_html_url: null,
     demo_link: "https://geo-z.vercel.app",
@@ -191,6 +217,12 @@ export const sampleProjects: Project[] = [
     like_count: 0,
     status: "published",
     featured: true,
+    ...RECIPE_DEFAULTS,
+    difficulty: "advanced",
+    coding_required: "heavy",
+    estimated_time: "2 weeks",
+    who_is_this_for: ["developer", "founder"],
+    category: "data-tool",
     author: authors[3],
   },
   {
@@ -242,7 +274,7 @@ export const sampleProjects: Project[] = [
       "Tried using GPT-4 initially but the latency was 15-20 seconds per analysis. Users bounced. Switched to Claude 3.5 Sonnet and got it under 5 seconds. Also tried OCR for scanned resumes but the accuracy was terrible \u2014 dropped it and required text-based PDFs only.",
     stack_tags: ["Next.js", "Claude API", "Vercel", "pdf.js", "Tailwind CSS", "Stripe"],
     screenshots: [
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1400&q=80",
+      "https://api.dicebear.com/9.x/shapes/svg?seed=resume-roaster&backgroundColor=ffd5dc,ffdfbf&shape1Color=e17055,d63031&shape2Color=fdcb6e,ffeaa7&shape3Color=fab1a0,ff7675&size=600",
     ],
     demo_html_url: null,
     demo_link: "https://resumeroaster.ai",
@@ -268,6 +300,14 @@ export const sampleProjects: Project[] = [
     like_count: 0,
     status: "published",
     featured: true,
+    ...RECIPE_DEFAULTS,
+    difficulty: "intermediate",
+    coding_required: "moderate",
+    estimated_time: "2 hours",
+    who_is_this_for: ["developer", "founder"],
+    category: "internal-tool",
+    completion_count: 47,
+    save_count: 89,
     author: authors[0],
   },
   {
@@ -325,7 +365,7 @@ export const sampleProjects: Project[] = [
       "Vercel",
     ],
     screenshots: [
-      "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1400&q=80",
+      "https://api.dicebear.com/9.x/shapes/svg?seed=github-code-review&backgroundColor=b6e3f4,d1d4f9&shape1Color=2d3436,636e72&shape2Color=00b894,55efc4&shape3Color=00cec9,81ecec&size=600",
     ],
     demo_html_url: null,
     demo_link: null,
@@ -352,6 +392,14 @@ export const sampleProjects: Project[] = [
     like_count: 0,
     status: "published",
     featured: true,
+    ...RECIPE_DEFAULTS,
+    difficulty: "intermediate",
+    coding_required: "moderate",
+    estimated_time: "3 days",
+    who_is_this_for: ["developer"],
+    category: "internal-tool",
+    completion_count: 23,
+    save_count: 120,
     author: authors[1],
   },
   {
@@ -389,7 +437,7 @@ export const sampleProjects: Project[] = [
       "Tried to auto-detect who said what from the transcript but speaker attribution was unreliable with Zoom's default transcription. Dropped auto-attribution and asked users to use labeled transcripts instead.",
     stack_tags: ["Slack API", "Claude API", "Node.js", "Vercel Functions"],
     screenshots: [
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80",
+      "https://api.dicebear.com/9.x/shapes/svg?seed=saas-boilerplate&backgroundColor=c0aede,d1d4f9&shape1Color=6c5ce7,a29bfe&shape2Color=fd79a8,e84393&shape3Color=dfe6e9,b2bec3&size=600",
     ],
     demo_html_url: null,
     demo_link: null,
@@ -415,6 +463,14 @@ export const sampleProjects: Project[] = [
     like_count: 0,
     status: "published",
     featured: true,
+    ...RECIPE_DEFAULTS,
+    difficulty: "beginner",
+    coding_required: "minimal",
+    estimated_time: "1 hour",
+    who_is_this_for: ["founder", "marketer"],
+    category: "automation",
+    completion_count: 89,
+    save_count: 200,
     author: authors[2],
   },
   {
@@ -452,7 +508,7 @@ export const sampleProjects: Project[] = [
       "Tried generating React components instead of plain HTML \u2014 too complex, too many dependencies to resolve. Plain HTML + Tailwind CDN is the sweet spot for instant-deployable output.",
     stack_tags: ["Next.js", "Claude API", "Tailwind CSS", "Vercel"],
     screenshots: [
-      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1400&q=80",
+      "https://api.dicebear.com/9.x/shapes/svg?seed=landing-page-gen&backgroundColor=ffdfbf,ffd5dc&shape1Color=fdcb6e,f9ca24&shape2Color=e17055,fab1a0&shape3Color=00b894,55efc4&size=600",
     ],
     demo_html_url: null,
     demo_link: "https://landinggen.dev",
@@ -477,6 +533,14 @@ export const sampleProjects: Project[] = [
     like_count: 0,
     status: "published",
     featured: false,
+    ...RECIPE_DEFAULTS,
+    difficulty: "beginner",
+    coding_required: "none",
+    estimated_time: "30 min",
+    who_is_this_for: ["founder", "marketer", "student", "anyone"],
+    category: "landing-page",
+    completion_count: 156,
+    save_count: 340,
     author: authors[0],
   },
   {
@@ -514,7 +578,7 @@ export const sampleProjects: Project[] = [
       "Tried to review entire files instead of just the diff \u2014 way too expensive and slow. Also tried GPT-4 but the cost per review was $0.50-1.00. Claude Haiku brought it down to $0.02-0.05 per review.",
     stack_tags: ["GitHub Actions", "Claude API", "TypeScript", "GitHub API"],
     screenshots: [
-      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1400&q=80",
+      "https://api.dicebear.com/9.x/shapes/svg?seed=meeting-slack-bot&backgroundColor=b6e3f4,ffdfbf&shape1Color=0984e3,74b9ff&shape2Color=6c5ce7,a29bfe&shape3Color=00cec9,81ecec&size=600",
     ],
     demo_html_url: null,
     demo_link: null,
@@ -540,6 +604,14 @@ export const sampleProjects: Project[] = [
     like_count: 0,
     status: "published",
     featured: false,
+    ...RECIPE_DEFAULTS,
+    difficulty: "intermediate",
+    coding_required: "moderate",
+    estimated_time: "2 hours",
+    who_is_this_for: ["developer"],
+    category: "automation",
+    completion_count: 34,
+    save_count: 78,
     author: authors[1],
   },
   {
@@ -577,7 +649,7 @@ export const sampleProjects: Project[] = [
       "Tried to build automatic prompt optimization (genetic algorithms on prompts) but the search space was too large and results were unpredictable. Went back to manual A/B testing which is simpler and more trustworthy.",
     stack_tags: ["React", "Python", "FastAPI", "PostgreSQL", "Recharts"],
     screenshots: [
-      "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1400&q=80",
+      "https://api.dicebear.com/9.x/shapes/svg?seed=discord-ai-moderator&backgroundColor=ffd5dc,c0aede&shape1Color=e84393,fd79a8&shape2Color=6c5ce7,a29bfe&shape3Color=fdcb6e,ffeaa7&size=600",
     ],
     demo_html_url: null,
     demo_link: null,
@@ -602,6 +674,14 @@ export const sampleProjects: Project[] = [
     like_count: 0,
     status: "published",
     featured: false,
+    ...RECIPE_DEFAULTS,
+    difficulty: "advanced",
+    coding_required: "heavy",
+    estimated_time: "1 week",
+    who_is_this_for: ["developer"],
+    category: "internal-tool",
+    completion_count: 12,
+    save_count: 45,
     author: authors[2],
   },
 ];

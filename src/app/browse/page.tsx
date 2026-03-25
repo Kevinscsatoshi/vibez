@@ -1,7 +1,7 @@
-import { getAllProjects } from "@/lib/sample-data";
-import { HomeSections } from "@/components/home-sections";
 import { createClient } from "@/lib/supabase-server";
+import { getAllProjects } from "@/lib/sample-data";
 import type { Project } from "@/types/database";
+import { BrowseClient } from "./browse-client";
 
 function normalizeProject(record: Record<string, unknown>): Project {
   return {
@@ -25,7 +25,7 @@ function normalizeProject(record: Record<string, unknown>): Project {
   };
 }
 
-async function getHomeProjects() {
+async function getAllRecipes(): Promise<Project[]> {
   try {
     const supabase = await createClient();
     const { data } = await supabase
@@ -33,39 +33,18 @@ async function getHomeProjects() {
       .select("*, author:profiles(*)")
       .eq("status", "published")
       .order("created_at", { ascending: false })
-      .limit(60);
+      .limit(100);
 
     if (data && data.length > 0) {
-      const all = data.map((row) => normalizeProject(row as Record<string, unknown>));
-      const featured = all.filter((project) => project.featured).slice(0, 8);
-      const trending = [...all].sort(
-        (a, b) =>
-          (b.like_count ?? 0) + b.fork_count + b.view_count - ((a.like_count ?? 0) + a.fork_count + a.view_count)
-      );
-      const latest = [...all].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-      return { featured, trending, latest };
+      return data.map((row) => normalizeProject(row as Record<string, unknown>));
     }
   } catch {
-    // Fall through to sample data.
+    // fall through
   }
-
-  const sample = getAllProjects();
-  return {
-    featured: sample.filter((project) => project.featured),
-    trending: [...sample].sort(
-      (a, b) =>
-        (b.like_count ?? 0) + b.fork_count + b.view_count - ((a.like_count ?? 0) + a.fork_count + a.view_count)
-    ),
-    latest: [...sample].sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    ),
-  };
+  return getAllProjects();
 }
 
-export default async function HomePage() {
-  const { featured, trending, latest } = await getHomeProjects();
-
-  return <HomeSections featured={featured} trending={trending} latest={latest} />;
+export default async function BrowsePage() {
+  const recipes = await getAllRecipes();
+  return <BrowseClient recipes={recipes} />;
 }

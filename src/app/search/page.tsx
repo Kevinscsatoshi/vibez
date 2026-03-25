@@ -1,4 +1,4 @@
-import { ProjectCard } from "@/components/project-card";
+import { RecipeCard } from "@/components/recipe-card";
 import { getAllProjects } from "@/lib/sample-data";
 import { filterProjectsByQuery } from "@/lib/search-projects";
 import Link from "next/link";
@@ -10,9 +10,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const { q } = await searchParams;
   const query = (q ?? "").trim();
   const title = query
-    ? `Search: ${query} — vibeZ`
-    : "Search projects — vibeZ";
-  return { title, description: "Search projects, stacks, and builders on vibeZ." };
+    ? `Search: ${query} — VibeZ`
+    : "Search recipes — VibeZ";
+  return { title, description: "Search recipes, tools, and builders on VibeZ." };
 }
 
 export default async function SearchPage({ searchParams }: Props) {
@@ -35,7 +35,7 @@ export default async function SearchPage({ searchParams }: Props) {
               <span className="text-accent">&ldquo;{trimmed}&rdquo;</span>
             </>
           ) : (
-            "Search projects"
+            "Search recipes"
           )}
         </h1>
         <p className="mt-2 text-sm text-muted">
@@ -49,13 +49,13 @@ export default async function SearchPage({ searchParams }: Props) {
       {trimmed && filtered.length === 0 ? (
         <div className="rounded-md border border-dashed border-border bg-surface px-8 py-16 text-center">
           <p className="text-muted">
-            No projects match your search. Try different keywords or fewer terms.
+            No recipes match your search. Try different keywords or browse by category.
           </p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {(trimmed ? filtered : all).map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <RecipeCard key={project.id} project={project} />
           ))}
         </div>
       )}

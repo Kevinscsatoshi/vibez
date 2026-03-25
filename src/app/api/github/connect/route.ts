@@ -1,11 +1,6 @@
 import { createClient } from "@/lib/supabase-server";
+import { getAppOrigin } from "@/lib/app-origin";
 import { NextResponse } from "next/server";
-
-function getAppOrigin(request: Request) {
-  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (configured) return configured.replace(/\/+$/, "");
-  return new URL(request.url).origin;
-}
 
 export async function GET(request: Request) {
   const supabase = await createClient();

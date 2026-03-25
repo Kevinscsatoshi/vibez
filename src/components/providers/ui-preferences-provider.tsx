@@ -31,6 +31,8 @@ const THEME_STORAGE_KEY = "vibez.theme";
 
 function getInitialTheme(): ThemeMode {
   if (typeof window === "undefined") return "light";
+  const fromDom = document.documentElement.dataset.theme;
+  if (fromDom === "light" || fromDom === "dark") return fromDom;
   const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "light" || stored === "dark") return stored;
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -51,13 +53,8 @@ function getInitialLanguage(): Language {
 }
 
 export function UiPreferencesProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
-  const [theme, setThemeState] = useState<ThemeMode>("light");
-
-  useEffect(() => {
-    setLanguageState(getInitialLanguage());
-    setThemeState(getInitialTheme());
-  }, []);
+  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
+  const [theme, setThemeState] = useState<ThemeMode>(() => getInitialTheme());
 
   useEffect(() => {
     if (typeof window === "undefined") return;

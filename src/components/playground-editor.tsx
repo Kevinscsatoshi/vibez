@@ -15,7 +15,7 @@ interface PlaygroundEditorProps {
 }
 
 const DEFAULT_HTML = `<div class="container">
-  <h1>Hello, vibeZ!</h1>
+  <h1>Hello, VibeZ!</h1>
   <p>Start building something amazing.</p>
   <button id="btn">Click me</button>
   <div id="output"></div>

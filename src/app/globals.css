@@ -161,6 +161,24 @@ html:lang(ko) .font-bitcount {
   animation: loading-caret-blink 1s steps(1, end) infinite;
 }
 
+#boot-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.25s ease;
+}
+
+html[data-boot-ready="1"] #boot-loader {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* Markdown content styles */
 .markdown-content h1 { font-size: 1.5rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; }
 .markdown-content h2 { font-size: 1.25rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; }

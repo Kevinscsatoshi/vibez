@@ -17,23 +17,23 @@ export function Header({ projects }: { projects: Project[] }) {
         <Link href="/" className="flex shrink-0 items-center gap-2 text-[20px] font-bold tracking-tight">
           <Image
             src="/logo.svg"
-            alt="vibeZ"
+            alt="VibeZ"
             width={32}
             height={32}
             className="brand-logo"
           />
-          <span>vibe<span className="font-black">Z</span></span>
+          <span>Vibe<span className="font-black">Z</span></span>
         </Link>
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3 md:gap-4">
           <nav className="hidden items-center gap-5 text-[18px] sm:flex">
-            <Link href="/" className="font-bitcount text-muted hover:text-foreground transition-colors">
-              {t("nav.discover")}
+            <Link href="/browse" className="font-bitcount text-muted hover:text-foreground transition-colors">
+              {t("nav.browse")}
             </Link>
             <Link href="/create" className="font-bitcount text-muted hover:text-foreground transition-colors">
-              {t("nav.publish")}
+              {t("nav.create")}
             </Link>
-            <Link href="/playground" className="font-bitcount text-muted hover:text-foreground transition-colors">
-              {t("nav.playground")}
+            <Link href="/workspace" className="font-bitcount text-muted hover:text-foreground transition-colors">
+              {t("nav.workspace")}
             </Link>
           </nav>
           <select

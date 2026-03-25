@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAuthorById, getProjectsByAuthor } from "@/lib/sample-data";
 import { createClient } from "@/lib/supabase-server";
-import { ProjectCard } from "@/components/project-card";
+import { RecipeCard } from "@/components/recipe-card";
 import { Metadata } from "next";
 import type { Profile, Project } from "@/types/database";
 
@@ -13,8 +13,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const author = getAuthorById(id);
   if (!author) return {};
   return {
-    title: `${author.display_name} — vibeZ`,
-    description: author.bio || `Projects by ${author.display_name}`,
+    title: `${author.display_name} — VibeZ`,
+    description: author.bio || `Recipes by ${author.display_name}`,
   };
 }
 
@@ -35,26 +35,27 @@ async function getProfileData(id: string) {
         .eq("status", "published")
         .order("created_at", { ascending: false });
 
-      // Get liked projects
-      const { data: likedProjects } = await supabase
-        .from("project_likes")
-        .select("project_id, projects:project_id(*, author:profiles(*))")
+      // Get saved recipes
+      const { data: savedRecipes } = await supabase
+        .from("recipe_saves")
+        .select("recipe_id")
         .eq("user_id", id);
 
-      const normalizedLikedProjects = (likedProjects ?? [])
-        .map((row) => {
-          const linked = (row as Record<string, unknown>).projects;
-          if (Array.isArray(linked)) {
-            return (linked[0] as Project | undefined) ?? null;
-          }
-          return (linked as Project | null) ?? null;
-        })
-        .filter(Boolean) as Project[];
+      let savedProjects: Project[] = [];
+      if (savedRecipes && savedRecipes.length > 0) {
+        const ids = savedRecipes.map((s) => s.recipe_id);
+        const { data } = await supabase
+          .from("projects")
+          .select("*, author:profiles(*)")
+          .in("id", ids)
+          .eq("status", "published");
+        if (data) savedProjects = data as Project[];
+      }
 
       return {
         author: profile as Profile,
         projects: (projects || []) as Project[],
-        likedProjects: normalizedLikedProjects,
+        savedProjects,
         source: "supabase" as const,
       };
     }
@@ -66,7 +67,7 @@ async function getProfileData(id: string) {
   const author = getAuthorById(id);
   if (!author) return null;
   const projects = getProjectsByAuthor(id);
-  return { author, projects, likedProjects: [], source: "sample" as const };
+  return { author, projects, savedProjects: [], source: "sample" as const };
 }
 
 export default async function ProfilePage({ params }: { params: Params }) {
@@ -74,8 +75,9 @@ export default async function ProfilePage({ params }: { params: Params }) {
   const data = await getProfileData(id);
   if (!data) notFound();
 
-  const { author, projects, likedProjects } = data;
-  const totalForks = projects.reduce((sum, p) => sum + p.fork_count, 0);
+  const { author, projects, savedProjects } = data;
+  const totalCompletions = projects.reduce((sum, p) => sum + (p.completion_count ?? 0), 0);
+  const totalRemixes = projects.reduce((sum, p) => sum + (p.remix_count ?? p.fork_count ?? 0), 0);
 
   // Check if the viewer is the profile owner
   let isOwner = false;
@@ -102,6 +104,11 @@ export default async function ProfilePage({ params }: { params: Params }) {
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold">{author.display_name}</h1>
+            {author.persona && (
+              <span className="text-xs text-muted border border-border px-2 py-0.5 rounded-full capitalize">
+                {author.persona}
+              </span>
+            )}
             {isOwner && (
               <Link
                 href="/profile/me"
@@ -127,11 +134,15 @@ export default async function ProfilePage({ params }: { params: Params }) {
           <div className="mt-3 flex gap-4 text-xs text-muted">
             <span>
               <span className="font-semibold text-foreground">{projects.length}</span>{" "}
-              projects
+              recipes
             </span>
             <span>
-              <span className="font-semibold text-foreground">{totalForks}</span>{" "}
-              forks received
+              <span className="font-semibold text-foreground">{totalCompletions}</span>{" "}
+              completions by others
+            </span>
+            <span>
+              <span className="font-semibold text-foreground">{totalRemixes}</span>{" "}
+              remixes
             </span>
             <span>
               Joined{" "}
@@ -144,29 +155,38 @@ export default async function ProfilePage({ params }: { params: Params }) {
         </div>
       </div>
 
-      {/* Projects */}
+      {/* Recipes */}
       <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4">
-        Projects
+        Recipes
       </h2>
       {projects.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <RecipeCard key={project.id} project={project} />
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted">No projects published yet.</p>
+        <div className="rounded-xl border border-dashed border-border p-8 text-center">
+          <p className="text-sm text-muted mb-2">No recipes published yet.</p>
+          <p className="text-xs text-muted mb-4">Built something with AI? Share how you did it — step by step.</p>
+          <Link
+            href="/create"
+            className="inline-block bg-foreground text-background px-4 py-2 text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+          >
+            Share a Recipe
+          </Link>
+        </div>
       )}
 
-      {/* Liked Projects */}
-      {likedProjects.length > 0 && (
+      {/* Saved Recipes */}
+      {savedProjects.length > 0 && (
         <>
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4 mt-12">
-            Liked Projects
+            Saved Recipes
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {likedProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} liked />
+            {savedProjects.map((project) => (
+              <RecipeCard key={project.id} project={project} />
             ))}
           </div>
         </>

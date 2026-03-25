@@ -8,8 +8,17 @@ import { completeOnboarding } from "./actions";
 export default function OnboardingPage() {
   const [selectedAvatar, setSelectedAvatar] = useState<PresetAvatar | null>(null);
   const [displayName, setDisplayName] = useState("");
+  const [persona, setPersona] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const personas = [
+    { id: "founder", label: "I'm a founder building a product" },
+    { id: "marketer", label: "I'm a marketer / creator" },
+    { id: "student", label: "I'm a student learning AI" },
+    { id: "developer", label: "I'm a developer exploring AI tools" },
+    { id: "explorer", label: "I'm just curious" },
+  ];
 
   const canContinue = selectedAvatar && displayName.trim().length >= 2;
 
@@ -23,6 +32,7 @@ export default function OnboardingPage() {
     formData.set("avatarPresetId", selectedAvatar.id);
     formData.set("avatarUrl", selectedAvatar.url);
     formData.set("gender", selectedAvatar.gender);
+    if (persona) formData.set("persona", persona);
 
     try {
       await completeOnboarding(formData);
@@ -35,7 +45,7 @@ export default function OnboardingPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Welcome to vibeZ</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Welcome to VibeZ</h1>
         <p className="mt-2 text-sm text-muted">
           Set up your builder profile. Choose an avatar and display name.
         </p>
@@ -66,6 +76,29 @@ export default function OnboardingPage() {
         />
       </div>
 
+      {/* Persona selection */}
+      <div className="mb-8">
+        <label className="block text-xs font-medium text-muted mb-3">
+          What describes you best?
+        </label>
+        <div className="flex flex-col gap-2">
+          {personas.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setPersona(p.id)}
+              className={`text-left px-4 py-3 text-sm rounded-xl border transition-colors ${
+                persona === p.id
+                  ? "border-foreground bg-foreground/5 font-medium"
+                  : "border-border hover:border-foreground/30"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Preview */}
       {selectedAvatar && displayName && (
         <div className="mb-6 border border-border rounded-2xl p-4 flex items-center gap-3">
@@ -77,7 +110,7 @@ export default function OnboardingPage() {
           />
           <div>
             <div className="font-medium text-sm">{displayName}</div>
-            <div className="text-xs text-muted">Builder on vibeZ</div>
+            <div className="text-xs text-muted">Builder on VibeZ</div>
           </div>
         </div>
       )}

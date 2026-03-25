@@ -1,3 +1,25 @@
+export interface RecipeStep {
+  order: number;
+  title: string;
+  description: string;
+  prompt: string;
+  tool: string;
+  expected_result: string;
+  tip: string;
+}
+
+export interface FailurePoint {
+  symptom: string;
+  cause: string;
+  fix: string;
+}
+
+export interface RequiredTool {
+  name: string;
+  url: string;
+  free_tier: boolean;
+}
+
 export interface Project {
   id: string;
   created_at: string;
@@ -32,6 +54,20 @@ export interface Project {
   like_count: number;
   status: "draft" | "pending" | "published";
   featured: boolean;
+  // Recipe fields
+  difficulty: "beginner" | "intermediate" | "advanced" | null;
+  coding_required: "none" | "minimal" | "moderate" | "heavy" | null;
+  estimated_time: string | null;
+  who_is_this_for: string[];
+  category: string | null;
+  cost_estimate: string | null;
+  outcome_description: string | null;
+  required_tools: RequiredTool[];
+  steps: RecipeStep[];
+  common_failures: FailurePoint[];
+  completion_count: number;
+  save_count: number;
+  remix_count: number;
   // joined fields
   author?: Profile;
   snippet?: Pick<Snippet, "id" | "title" | "is_public" | "author_id"> | null;
@@ -67,12 +103,41 @@ export interface Profile {
   bio: string | null;
   github_url: string | null;
   created_at: string;
+  persona: string | null;
 }
 
 export interface ProjectLike {
   user_id: string;
   project_id: string;
   created_at: string;
+}
+
+export interface RecipeSave {
+  user_id: string;
+  recipe_id: string;
+  created_at: string;
+}
+
+export interface RecipeCompletion {
+  id: string;
+  user_id: string;
+  recipe_id: string;
+  status: "completed" | "completed_with_modifications" | "had_issues";
+  notes: string | null;
+  step_failed: number | null;
+  created_at: string;
+}
+
+export interface CommunityNote {
+  id: string;
+  recipe_id: string;
+  author_id: string;
+  note_type: "tip" | "alternative" | "bug_report" | "adaptation" | "result";
+  content: string;
+  screenshot_url: string | null;
+  pinned: boolean;
+  created_at: string;
+  author?: Profile;
 }
 
 export interface Snippet {

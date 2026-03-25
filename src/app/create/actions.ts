@@ -1,6 +1,7 @@
 "use server";
 
 import { randomUUID } from "crypto";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase-server";
 import {
   ensureRepoWebhook,
@@ -11,6 +12,9 @@ import {
 type PromptBlock = { label: string; prompt: string; model: string };
 type Iteration = { version: string; what_changed: string; result: string };
 type Metric = { name: string; value: string; timeframe: string };
+type RecipeStep = { order: number; title: string; description: string; prompt: string; tool: string; expected_result: string; tip: string };
+type FailurePoint = { symptom: string; cause: string; fix: string };
+type RequiredTool = { name: string; url: string; free_tier_available: boolean };
 
 function parseJsonField<T>(value: FormDataEntryValue | null, fallback: T): T {
   if (typeof value !== "string" || !value.trim()) return fallback;
@@ -60,6 +64,18 @@ export async function publishProject(formData: FormData) {
     const videoUrl = (formData.get("video_url") as string | null)?.trim() || null;
     const lessons = (formData.get("lessons") as string | null)?.trim() || null;
     const snippetId = (formData.get("snippet_id") as string | null)?.trim() || null;
+
+    // Recipe fields
+    const difficulty = (formData.get("difficulty") as string | null)?.trim() || null;
+    const codingRequired = (formData.get("coding_required") as string | null)?.trim() || null;
+    const estimatedTime = (formData.get("estimated_time") as string | null)?.trim() || null;
+    const whoIsThisFor = parseJsonField<string[]>(formData.get("who_is_this_for"), []);
+    const category = (formData.get("category") as string | null)?.trim() || null;
+    const costEstimate = (formData.get("cost_estimate") as string | null)?.trim() || null;
+    const outcomeDescription = (formData.get("outcome_description") as string | null)?.trim() || null;
+    const steps = parseJsonField<RecipeStep[]>(formData.get("steps"), []);
+    const commonFailures = parseJsonField<FailurePoint[]>(formData.get("common_failures"), []);
+    const requiredTools = parseJsonField<RequiredTool[]>(formData.get("required_tools"), []);
     const repoFullName = (formData.get("repo_full_name") as string | null)?.trim() || null;
     if (repoFullName && !isRepoFullName(repoFullName)) {
       return { error: "invalid_repo_full_name" };
@@ -71,7 +87,7 @@ export async function publishProject(formData: FormData) {
     if (!oneLiner) {
       oneLiner = repoFullName
         ? `Imported from ${repoFullName}`
-        : "Shared on vibeZ";
+        : "Shared on VibeZ";
     }
     if (!whatIBuilt) {
       whatIBuilt = repoFullName
@@ -99,6 +115,16 @@ export async function publishProject(formData: FormData) {
         metrics,
         lessons,
         snippet_id: snippetId,
+        difficulty,
+        coding_required: codingRequired,
+        estimated_time: estimatedTime,
+        who_is_this_for: whoIsThisFor,
+        category,
+        cost_estimate: costEstimate,
+        outcome_description: outcomeDescription,
+        steps,
+        common_failures: commonFailures,
+        required_tools: requiredTools,
         status: "published",
       })
       .select("id")
@@ -168,6 +194,11 @@ export async function publishProject(formData: FormData) {
         await syncProjectFromRepo(project.id, repoFullName, token, "initial_link_sync");
       }
     }
+
+    revalidatePath("/");
+    revalidatePath("/profile/me");
+    revalidatePath(`/profile/${user.id}`);
+    revalidatePath(`/project/${project.id}`);
 
     return { id: project.id };
   } catch (error) {

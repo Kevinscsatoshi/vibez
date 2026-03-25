@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     .single();
 
   return {
-    title: data ? `${data.title} — Playground — vibeZ` : "Playground — vibeZ",
+    title: data ? `${data.title} — Playground — VibeZ` : "Playground — VibeZ",
   };
 }
 

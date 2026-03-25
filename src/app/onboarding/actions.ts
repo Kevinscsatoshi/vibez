@@ -17,6 +17,7 @@ export async function completeOnboarding(formData: FormData) {
   const avatarPresetId = formData.get("avatarPresetId") as string;
   const avatarUrl = formData.get("avatarUrl") as string;
   const gender = formData.get("gender") as string;
+  const persona = (formData.get("persona") as string | null)?.trim() || null;
 
   if (!displayName || displayName.length < 2) {
     throw new Error("Display name must be at least 2 characters");
@@ -30,6 +31,7 @@ export async function completeOnboarding(formData: FormData) {
       avatar_source: "preset",
       avatar_preset_id: avatarPresetId || null,
       gender: gender || null,
+      persona: persona,
     })
     .eq("id", user.id);
 

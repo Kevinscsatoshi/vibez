@@ -17,13 +17,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "vibeZ — The Builder Network for AI Builders",
+  title: "VibeZ — Build anything with AI. Follow the recipe.",
   description:
-    "See what AI builders are actually shipping. Prompts, stacks, metrics, and the full build story.",
+    "Step-by-step recipes for building real products with AI tools. No coding experience required.",
   openGraph: {
-    title: "vibeZ — The Builder Network for AI Builders",
+    title: "VibeZ — Build anything with AI. Follow the recipe.",
     description:
-      "See what AI builders are actually shipping. Prompts, stacks, metrics, and the full build story.",
+      "Step-by-step recipes for building real products with AI tools. No coding experience required.",
     type: "website",
   },
 };
@@ -56,8 +56,35 @@ export default function RootLayout({
             `,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  document.documentElement.dataset.bootReady = "0";
+                  var reveal = function() {
+                    window.setTimeout(function() {
+                      document.documentElement.dataset.bootReady = "1";
+                    }, 3000);
+                  };
+                  if (document.readyState === "complete") {
+                    reveal();
+                  } else {
+                    window.addEventListener("load", reveal, { once: true });
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col">
+        <div id="boot-loader" aria-hidden="true">
+          <div className="app-loading-wordmark">
+            <span>VibeZ</span>
+            <span className="app-loading-caret" />
+          </div>
+        </div>
         <UiPreferencesProvider>
           <Header projects={projects} />
           <main className="flex-1">{children}</main>
