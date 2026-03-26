@@ -187,8 +187,8 @@ export default function SignInPage() {
         </Link>
         <p className="mt-2 text-sm text-muted">
           {mode === "signin"
-            ? "Sign in to your builder account"
-            : "Create your builder account"}
+            ? "Sign in to your account"
+            : "Create your free account"}
         </p>
       </div>
 

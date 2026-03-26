@@ -644,7 +644,7 @@ export default function CreatePage() {
           </div>
 
           <div className="border-t border-border pt-5">
-            <h3 className="text-sm font-medium mb-3">Builder&apos;s story (optional)</h3>
+            <h3 className="text-sm font-medium mb-3">Your story (optional)</h3>
             <div className="space-y-4">
               <div>
                 <label className={labelClass}>Why I created this recipe</label>

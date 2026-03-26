@@ -133,7 +133,7 @@ export function RecipeCard({ project, showPreview = false }: RecipeCardProps) {
           </div>
           {project.completion_count > 0 && (
             <span className="text-success font-medium whitespace-nowrap">
-              {project.completion_count} completed
+              {project.completion_count} tried this
             </span>
           )}
         </div>

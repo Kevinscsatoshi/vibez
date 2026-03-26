@@ -252,7 +252,7 @@ export default async function ProjectPage({
           </span>
           {project.completion_count > 0 && (
             <span className="text-success font-medium">
-              {project.completion_count} builders completed this
+              {project.completion_count} people tried this
             </span>
           )}
         </div>
@@ -358,6 +358,7 @@ export default async function ProjectPage({
             {project.cost_estimate && (
               <p className="mt-1 text-xs text-muted">Estimated cost: {project.cost_estimate}</p>
             )}
+            <p className="mt-3 text-xs text-muted italic">Don&apos;t worry if you haven&apos;t used these before — each step will guide you.</p>
           </div>
         </Section>
       )}
@@ -433,7 +434,7 @@ export default async function ProjectPage({
 
       {/* When Things Go Wrong */}
       {(project.common_failures.length > 0 || project.failures) && (
-        <Section title="When Things Go Wrong">
+        <Section title="Stuck? Try these fixes">
           <div className="space-y-3">
             {project.common_failures.map((f, i) => (
               <div key={i} className="rounded-xl border border-border p-4">
@@ -452,7 +453,7 @@ export default async function ProjectPage({
       )}
 
       {/* Community Notes */}
-      <Section title={`Community Notes${communityNotes.length > 0 ? ` (${communityNotes.length})` : ""}`}>
+      <Section title={`Notes from the Community${communityNotes.length > 0 ? ` (${communityNotes.length})` : ""}`}>
         {communityNotes.length > 0 ? (
           <div className="space-y-3">
             {communityNotes.map((note) => (
@@ -476,8 +477,8 @@ export default async function ProjectPage({
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-border p-6 text-center">
-            <p className="text-sm text-muted mb-1">No community notes yet.</p>
-            <p className="text-xs text-muted">Followed this recipe? Share a tip, report a bug, or show your result.</p>
+            <p className="text-sm text-muted mb-1">Be the first to leave a note!</p>
+            <p className="text-xs text-muted">Tried this recipe? Share a tip, ask a question, or show what you made.</p>
           </div>
         )}
       </Section>
@@ -572,12 +573,12 @@ export default async function ProjectPage({
       {(project.why_i_built || project.iterations.length > 0 || project.lessons) && (
         <details className="mb-8 border border-border rounded-xl">
           <summary className="px-5 py-3 text-sm font-semibold cursor-pointer hover:bg-tag-bg/50 rounded-xl transition-colors">
-            Builder&apos;s Story
+            Behind the Recipe
           </summary>
           <div className="px-5 pb-5 space-y-4">
             {project.why_i_built && (
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted mb-1">Why I Created This</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted mb-1">Why I Made This</h4>
                 <p className="text-sm leading-relaxed text-muted">
                   <HighlightText text={project.why_i_built} />
                 </p>

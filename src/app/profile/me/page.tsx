@@ -66,7 +66,7 @@ export default async function ProfileSettingsPage() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 rounded-2xl border border-border bg-surface p-5 sm:p-6">
           <h1 className="text-2xl font-bold tracking-tight mb-1">Edit Profile</h1>
-          <p className="text-sm text-muted">Update your builder profile details.</p>
+          <p className="text-sm text-muted">Update your profile details.</p>
         </div>
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border bg-surface px-4 py-3">

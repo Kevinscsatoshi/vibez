@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { getAllProjects } from "@/lib/sample-data";
 import { UiPreferencesProvider } from "@/components/providers/ui-preferences-provider";
 import { FooterTagline } from "@/components/footer-tagline";
+import { cn } from "@/lib/utils";
+
+const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,13 +20,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VibeZ — Build anything with AI. Follow the recipe.",
+  title: "VibeZ — AI recipes for everyone",
   description:
-    "Step-by-step recipes for building real products with AI tools. No coding experience required.",
+    "Step-by-step recipes anyone can follow to create real things with AI. No experience needed.",
   openGraph: {
-    title: "VibeZ — Build anything with AI. Follow the recipe.",
+    title: "VibeZ — AI recipes for everyone",
     description:
-      "Step-by-step recipes for building real products with AI tools. No coding experience required.",
+      "Step-by-step recipes anyone can follow to create real things with AI. No experience needed.",
     type: "website",
   },
 };
@@ -37,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", figtree.variable)}
     >
       <head>
         <script

@@ -13,11 +13,11 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
 
   const personas = [
-    { id: "founder", label: "I'm a founder building a product" },
-    { id: "marketer", label: "I'm a marketer / creator" },
-    { id: "student", label: "I'm a student learning AI" },
-    { id: "developer", label: "I'm a developer exploring AI tools" },
-    { id: "explorer", label: "I'm just curious" },
+    { id: "founder", label: "I want to build a product or business" },
+    { id: "marketer", label: "I create content or do marketing" },
+    { id: "student", label: "I'm learning about AI" },
+    { id: "developer", label: "I'm a developer trying new tools" },
+    { id: "explorer", label: "I'm just looking around" },
   ];
 
   const canContinue = selectedAvatar && displayName.trim().length >= 2;
@@ -45,9 +45,9 @@ export default function OnboardingPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Welcome to VibeZ</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Welcome to VibeZ!</h1>
         <p className="mt-2 text-sm text-muted">
-          Set up your builder profile. Choose an avatar and display name.
+          Let&apos;s get you set up. Pick an avatar and a name.
         </p>
       </div>
 
@@ -79,7 +79,7 @@ export default function OnboardingPage() {
       {/* Persona selection */}
       <div className="mb-8">
         <label className="block text-xs font-medium text-muted mb-3">
-          What describes you best?
+          What brings you here?
         </label>
         <div className="flex flex-col gap-2">
           {personas.map((p) => (
@@ -110,7 +110,7 @@ export default function OnboardingPage() {
           />
           <div>
             <div className="font-medium text-sm">{displayName}</div>
-            <div className="text-xs text-muted">Builder on VibeZ</div>
+            <div className="text-xs text-muted">on VibeZ</div>
           </div>
         </div>
       )}
@@ -132,7 +132,7 @@ export default function OnboardingPage() {
             : "bg-border text-muted cursor-not-allowed"
         }`}
       >
-        {loading ? "Saving..." : "Complete Setup"}
+        {loading ? "Saving..." : "Get started"}
       </button>
 
       <p className="mt-3 text-xs text-muted text-center">

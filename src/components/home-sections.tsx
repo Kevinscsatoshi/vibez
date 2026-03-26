@@ -11,12 +11,12 @@ interface HomeSectionsProps {
   latest: Project[];
 }
 
-const PERSONA_PILLS = [
-  { label: "Founder", href: "/browse?persona=founder" },
-  { label: "Marketer", href: "/browse?persona=marketer" },
-  { label: "Student", href: "/browse?persona=student" },
-  { label: "Developer", href: "/browse?persona=developer" },
-  { label: "Just Exploring", href: "/browse" },
+const PERSONA_PILLS: { key: "home.persona.business" | "home.persona.marketing" | "home.persona.learning" | "home.persona.developer" | "home.persona.exploring"; href: string }[] = [
+  { key: "home.persona.business", href: "/browse?persona=founder" },
+  { key: "home.persona.marketing", href: "/browse?persona=marketer" },
+  { key: "home.persona.learning", href: "/browse?persona=student" },
+  { key: "home.persona.developer", href: "/browse?persona=developer" },
+  { key: "home.persona.exploring", href: "/browse" },
 ];
 
 const CATEGORIES = [
@@ -28,21 +28,6 @@ const CATEGORIES = [
   { label: "Chatbots", slug: "chatbot" },
   { label: "Mobile Apps", slug: "mobile-app" },
   { label: "Chrome Extensions", slug: "chrome-ext" },
-];
-
-const VALUE_PROPS = [
-  {
-    title: "Recipe-first",
-    description: "Not code repos. Structured, step-by-step build instructions anyone can follow.",
-  },
-  {
-    title: "Community-tested",
-    description: "See who completed each recipe, what went wrong, and how they fixed it.",
-  },
-  {
-    title: "Remix anything",
-    description: "Take any recipe, swap the tools, change the prompts, make it yours.",
-  },
 ];
 
 export function HomeSections({ featured, trending, latest }: HomeSectionsProps) {
@@ -79,32 +64,20 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
         </div>
         {/* Persona pills */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          <span className="text-xs text-muted mr-1">I&apos;m a:</span>
+          <span className="text-xs text-muted mr-1">{t("home.persona.prefix")}</span>
           {PERSONA_PILLS.map((pill) => (
             <Link
-              key={pill.label}
+              key={pill.key}
               href={pill.href}
               className="px-3 py-1.5 text-xs font-medium border border-border rounded-full hover:bg-tag-bg hover:border-foreground/20 transition-colors"
             >
-              {pill.label}
+              {t(pill.key)}
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Popular Right Now */}
-      <section className="mb-14">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4">
-          {t("home.popular")}
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {(featured.length > 0 ? featured : trending).slice(0, 8).map((project) => (
-            <RecipeCard key={project.id} project={project} />
-          ))}
-        </div>
-      </section>
-
-      {/* Start Here — Beginner spotlight */}
+      {/* Start Here — Beginner spotlight (moved above Popular) */}
       {beginnerRecipes.length > 0 && (
         <section className="mb-14">
           <div className="mb-4">
@@ -142,7 +115,19 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
         </section>
       )}
 
-      {/* Browse by what you want to build */}
+      {/* Popular Right Now */}
+      <section className="mb-14">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4">
+          {t("home.popular")}
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {(featured.length > 0 ? featured : trending).slice(0, 8).map((project) => (
+            <RecipeCard key={project.id} project={project} />
+          ))}
+        </div>
+      </section>
+
+      {/* Browse by what you want to create */}
       <section className="mb-14">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4">
           {t("home.browseByGoal")}
@@ -172,29 +157,35 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
         </div>
       </section>
 
-      {/* Why VibeZ */}
+      {/* How it works */}
       <section className="mb-14 border-t border-border pt-10">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-6 text-center">
           {t("home.whyVibez")}
         </h2>
         <div className="grid gap-6 sm:grid-cols-3">
-          {VALUE_PROPS.map((prop) => (
-            <div key={prop.title} className="text-center">
-              <h3 className="font-semibold text-sm mb-1.5">{prop.title}</h3>
-              <p className="text-xs text-muted leading-relaxed">{prop.description}</p>
-            </div>
-          ))}
+          <div className="text-center">
+            <h3 className="font-semibold text-sm mb-1.5">{t("home.valueProp1.title")}</h3>
+            <p className="text-xs text-muted leading-relaxed">{t("home.valueProp1.desc")}</p>
+          </div>
+          <div className="text-center">
+            <h3 className="font-semibold text-sm mb-1.5">{t("home.valueProp2.title")}</h3>
+            <p className="text-xs text-muted leading-relaxed">{t("home.valueProp2.desc")}</p>
+          </div>
+          <div className="text-center">
+            <h3 className="font-semibold text-sm mb-1.5">{t("home.valueProp3.title")}</h3>
+            <p className="text-xs text-muted leading-relaxed">{t("home.valueProp3.desc")}</p>
+          </div>
         </div>
       </section>
 
       {/* Final CTA */}
       <section className="mb-10 text-center border-t border-border pt-10">
-        <p className="text-sm text-muted mb-4">Ready to share how you build?</p>
+        <p className="text-sm text-muted mb-4">{t("home.cta.prompt")}</p>
         <Link
           href="/create"
           className="bg-foreground text-background px-6 py-2.5 text-sm font-medium rounded-full hover:opacity-90 transition-opacity inline-block"
         >
-          Share a Recipe
+          {t("home.cta.button")}
         </Link>
       </section>
     </div>
