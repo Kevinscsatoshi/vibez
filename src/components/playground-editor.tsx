@@ -115,6 +115,7 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+const MAX_PARTICLES = 150;
 const palettes = [
   ['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff'],
   ['#00f5d4','#00bbf9','#9b5de5','#f15bb5','#fee440'],
@@ -124,8 +125,6 @@ let paletteIdx = 0;
 let colors = palettes[0];
 let particles = [];
 let gravity = false;
-let mouseX = canvas.width / 2;
-let mouseY = canvas.height / 2;
 
 class Particle {
   constructor(x, y) {
@@ -136,43 +135,39 @@ class Particle {
     this.vx = Math.cos(angle) * speed;
     this.vy = Math.sin(angle) * speed;
     this.life = 1;
-    this.decay = Math.random() * 0.015 + 0.005;
-    this.size = Math.random() * 4 + 2;
+    this.decay = Math.random() * 0.02 + 0.008;
+    this.size = Math.random() * 3 + 1.5;
     this.color = colors[Math.floor(Math.random() * colors.length)];
   }
   update() {
-    if (gravity) this.vy += 0.05;
+    if (gravity) this.vy += 0.06;
     this.x += this.vx;
     this.y += this.vy;
     this.life -= this.decay;
-    this.vx *= 0.99;
-    this.vy *= 0.99;
+    this.vx *= 0.98;
+    this.vy *= 0.98;
   }
   draw() {
-    ctx.save();
     ctx.globalAlpha = this.life;
     ctx.fillStyle = this.color;
-    ctx.shadowColor = this.color;
-    ctx.shadowBlur = 15;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
     ctx.fill();
-    ctx.restore();
   }
 }
 
+function addParticles(x, y, count) {
+  const room = MAX_PARTICLES - particles.length;
+  const n = Math.min(count, room);
+  for (let i = 0; i < n; i++) particles.push(new Particle(x, y));
+}
+
 canvas.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  for (let i = 0; i < 3; i++) {
-    particles.push(new Particle(mouseX, mouseY));
-  }
+  addParticles(e.clientX, e.clientY, 2);
 });
 
 canvas.addEventListener('click', (e) => {
-  for (let i = 0; i < 30; i++) {
-    particles.push(new Particle(e.clientX, e.clientY));
-  }
+  addParticles(e.clientX, e.clientY, 20);
 });
 
 document.getElementById('color-btn').onclick = () => {
@@ -197,10 +192,15 @@ window.addEventListener('resize', () => {
 });
 
 function animate() {
-  ctx.fillStyle = 'rgba(10, 10, 26, 0.15)';
+  ctx.fillStyle = 'rgba(10, 10, 26, 0.18)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   particles = particles.filter(p => p.life > 0);
-  particles.forEach(p => { p.update(); p.draw(); });
+  ctx.globalAlpha = 1;
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
+  }
+  ctx.globalAlpha = 1;
   document.getElementById('stats').textContent =
     'particles: ' + particles.length;
   requestAnimationFrame(animate);
