@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import { Project } from "@/types/database";
 import { filterProjectsByQuery } from "@/lib/search-projects";
 import { useUiPreferences } from "@/components/providers/ui-preferences-provider";
@@ -101,19 +102,7 @@ export function SearchBar({ projects, variant = "default" }: SearchBarProps) {
       }
     >
       <div className="relative flex items-center bg-surface border border-border rounded-md px-2.5 py-2 sm:px-3 sm:py-2.5 focus-within:border-muted focus-within:shadow-[0_0_0_1px_rgba(55,53,47,0.09)] transition-shadow">
-          <svg
-            className="h-4.5 w-4.5 text-muted shrink-0 mr-3"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-            />
-          </svg>
+          <MagnifyingGlass className="h-4.5 w-4.5 text-muted shrink-0 mr-3" weight="bold" />
           <input
             ref={inputRef}
             type="text"

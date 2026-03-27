@@ -5,7 +5,12 @@ import { Section } from "@/components/section";
 import { MarkdownBlock } from "@/components/markdown-block";
 import { HighlightText } from "@/components/highlight-text";
 import { SaveButton } from "@/components/save-button";
+import { CopyButton } from "@/components/copy-button";
+import { ShareButton } from "@/components/share-button";
 import { GithubSyncButton } from "@/components/github-sync-button";
+import { RecipeStepTracker } from "@/components/recipe-step-tracker";
+import { StuckButton } from "@/components/stuck-button";
+import { PreviewBrowserChrome } from "@/components/preview-browser-chrome";
 import { createClient } from "@/lib/supabase-server";
 import { Metadata } from "next";
 import type { Project, Snippet, CommunityNote } from "@/types/database";
@@ -283,12 +288,22 @@ export default async function ProjectPage({
             initialSaved={userSaved}
             initialSaveCount={project.save_count}
           />
+          {/* Try It button */}
+          {(project.snippet_id || project.steps.length > 0) && (
+            <Link
+              href={project.snippet_id ? `/playground/${project.snippet_id}` : `/playground?recipe=${project.id}`}
+              className="bg-success text-white px-4 py-1.5 text-sm font-medium hover:opacity-90 transition-opacity rounded-full"
+            >
+              Try it
+            </Link>
+          )}
           <Link
             href={`/create?fork=${project.id}`}
             className="border border-border px-4 py-1.5 text-sm font-medium hover:border-foreground/30 transition-colors rounded-full"
           >
             Remix this recipe
           </Link>
+          <ShareButton title={project.title} />
         </div>
       </header>
 
@@ -333,81 +348,83 @@ export default async function ProjectPage({
         </div>
       </Section>
 
-      {/* Before You Start */}
+      {/* Before You Start — adaptive by difficulty */}
       {(project.stack_tags.length > 0 || project.estimated_time || codingReq) && (
-        <Section title="Before You Start">
-          <div className="rounded-xl border border-border bg-tag-bg/30 p-4 text-sm">
-            <p className="font-medium mb-2">You&apos;ll need:</p>
-            <ul className="space-y-1 text-muted">
-              {project.stack_tags.map((tag) => (
-                <li key={tag} className="flex items-center gap-2">
-                  <span className="text-success">&#10003;</span>
-                  {tag}
-                </li>
-              ))}
-              {project.estimated_time && (
-                <li className="flex items-center gap-2">
-                  <span className="text-success">&#10003;</span>
-                  About {project.estimated_time}
-                </li>
+        difficulty === "advanced" ? (
+          <details className="mb-5">
+            <summary className="text-xs font-semibold uppercase tracking-wider text-muted mb-2.5 px-1 cursor-pointer hover:text-foreground transition-colors">
+              Before You Start
+            </summary>
+            <div className="bg-surface border border-border rounded-md p-5">
+              <div className="rounded-xl border border-border bg-tag-bg/30 p-4 text-sm">
+                <ul className="space-y-1 text-muted">
+                  {project.stack_tags.map((tag) => (
+                    <li key={tag} className="flex items-center gap-2">
+                      <span className="text-success">&#10003;</span>
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </details>
+        ) : (
+          <Section title="Before You Start">
+            <div className={`rounded-xl border border-border bg-tag-bg/30 p-4 ${difficulty === "beginner" ? "text-base" : "text-sm"}`}>
+              <p className={`font-medium mb-2 ${difficulty === "beginner" ? "text-lg" : ""}`}>You&apos;ll need:</p>
+              <ul className="space-y-1 text-muted">
+                {project.stack_tags.map((tag) => (
+                  <li key={tag} className="flex items-center gap-2">
+                    <span className="text-success">&#10003;</span>
+                    {tag}
+                  </li>
+                ))}
+                {project.estimated_time && (
+                  <li className="flex items-center gap-2">
+                    <span className="text-success">&#10003;</span>
+                    About {project.estimated_time}
+                  </li>
+                )}
+              </ul>
+              {codingReq && (
+                <p className="mt-2 text-xs text-muted">{CODING_LABELS[codingReq] ?? codingReq}.</p>
               )}
-            </ul>
-            {codingReq && (
-              <p className="mt-2 text-xs text-muted">{CODING_LABELS[codingReq] ?? codingReq}.</p>
-            )}
-            {project.cost_estimate && (
-              <p className="mt-1 text-xs text-muted">Estimated cost: {project.cost_estimate}</p>
-            )}
-            <p className="mt-3 text-xs text-muted italic">Don&apos;t worry if you haven&apos;t used these before — each step will guide you.</p>
-          </div>
-        </Section>
+              {project.cost_estimate && (
+                <p className="mt-1 text-xs text-muted">Estimated cost: {project.cost_estimate}</p>
+              )}
+              <p className="mt-3 text-xs text-muted italic">Don&apos;t worry if you haven&apos;t used these before — each step will guide you.</p>
+            </div>
+          </Section>
+        )
       )}
 
-      {/* Steps — the core */}
+      {/* Steps — interactive tracker */}
       {project.steps.length > 0 && (
-        <Section title="Steps">
-          <div className="space-y-4">
-            {project.steps.map((step, i) => (
-              <div key={i} className="border border-border rounded-xl p-4">
-                <div className="flex items-start gap-3 mb-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-background text-xs font-bold shrink-0">
-                    {step.order || i + 1}
-                  </span>
-                  <h4 className="font-medium text-sm pt-0.5">{step.title}</h4>
-                </div>
-                {step.description && (
-                  <p className="text-sm text-muted leading-relaxed ml-9 mb-2">
-                    <HighlightText text={step.description} />
-                  </p>
-                )}
-                {step.prompt && (
-                  <div className="ml-9 mb-2">
-                    <p className="text-xs text-muted mb-1">Prompt to use:</p>
-                    <div className="bg-[#1e1e1e] text-[#d4d4d4] p-3 text-xs font-mono leading-relaxed whitespace-pre-wrap rounded-lg relative">
-                      {step.prompt}
-                    </div>
-                  </div>
-                )}
-                {step.expected_result && (
-                  <div className="ml-9 text-xs text-muted">
-                    <span className="text-success font-medium">Expected result:</span>{" "}
-                    {step.expected_result}
-                  </div>
-                )}
-                {step.tip && (
-                  <div className="ml-9 mt-1 text-xs text-muted italic">
-                    Tip: {step.tip}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+        <Section title="Steps" id="recipe-steps">
+          <RecipeStepTracker
+            steps={project.steps}
+            recipeId={project.id}
+            estimatedTime={project.estimated_time}
+          />
         </Section>
       )}
 
       {/* Prompts (when no steps, prompts are the core content) */}
       {project.prompts.length > 0 && (
-        <Section title={project.steps.length > 0 ? "All Prompts" : "Prompts"}>
+        <Section
+          title={project.steps.length > 0 ? "All Prompts" : "Prompts"}
+          action={
+            project.prompts.length > 1 ? (
+              <CopyButton
+                text={project.prompts
+                  .map((p, i) => `## ${p.label || `Prompt ${i + 1}`}${p.model ? ` (${p.model})` : ""}\n\n${p.prompt}`)
+                  .join("\n\n---\n\n")}
+                size={14}
+                className="text-muted hover:text-foreground"
+              />
+            ) : undefined
+          }
+        >
           <div className="space-y-4">
             {project.prompts.map((block, i) => (
               <div key={i} className="border border-border p-4 rounded-xl">
@@ -423,8 +440,11 @@ export default async function ProjectPage({
                     </span>
                   )}
                 </div>
-                <div className="bg-[#1e1e1e] text-[#d4d4d4] p-4 text-sm font-mono leading-relaxed whitespace-pre-wrap rounded-lg">
+                <div className="bg-[#1e1e1e] text-[#d4d4d4] p-4 text-sm font-mono leading-relaxed whitespace-pre-wrap rounded-lg relative group/prompt">
                   {block.prompt}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover/prompt:opacity-100 transition-opacity">
+                    <CopyButton text={block.prompt} className="text-[#d4d4d4]/60 hover:text-[#d4d4d4]" size={16} />
+                  </div>
                 </div>
               </div>
             ))}
@@ -434,7 +454,7 @@ export default async function ProjectPage({
 
       {/* When Things Go Wrong */}
       {(project.common_failures.length > 0 || project.failures) && (
-        <Section title="Stuck? Try these fixes">
+        <Section title="Stuck? Try these fixes" id="troubleshooting">
           <div className="space-y-3">
             {project.common_failures.map((f, i) => (
               <div key={i} className="rounded-xl border border-border p-4">
@@ -490,17 +510,12 @@ export default async function ProjectPage({
             {repoLinked && isOwner && <GithubSyncButton projectId={project.id} />}
 
             {project.demo_html_url && (
-              <div className="border border-border rounded-xl overflow-hidden">
-                <div className="bg-tag-bg px-3 py-1.5 text-xs font-medium text-muted border-b border-border">
-                  Live Demo
-                </div>
-                <iframe
-                  src={project.demo_html_url}
-                  sandbox="allow-scripts"
-                  className="w-full h-96"
-                  title="Recipe demo"
-                />
-              </div>
+              <PreviewBrowserChrome
+                title="Live Demo"
+                src={project.demo_html_url}
+                sandbox="allow-scripts"
+                defaultHeight="standard"
+              />
             )}
 
             {project.video_url && (
@@ -569,8 +584,13 @@ export default async function ProjectPage({
         </Section>
       )}
 
-      {/* Builder's Story (collapsed section) */}
-      {(project.why_i_built || project.iterations.length > 0 || project.lessons) && (
+      {/* Floating "I'm stuck" button */}
+      {project.steps.length > 0 && (
+        <StuckButton hasFailures={project.common_failures.length > 0} />
+      )}
+
+      {/* Builder's Story (collapsed section) — hidden for beginner */}
+      {difficulty !== "beginner" && (project.why_i_built || project.iterations.length > 0 || project.lessons) && (
         <details className="mb-8 border border-border rounded-xl">
           <summary className="px-5 py-3 text-sm font-semibold cursor-pointer hover:bg-tag-bg/50 rounded-xl transition-colors">
             Behind the Recipe

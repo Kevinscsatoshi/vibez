@@ -35,7 +35,7 @@ function getInitialTheme(): ThemeMode {
   if (fromDom === "light" || fromDom === "dark") return fromDom;
   const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "light" || stored === "dark") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "light";
 }
 
 function getInitialLanguage(): Language {
@@ -67,6 +67,8 @@ export function UiPreferencesProvider({ children }: { children: React.ReactNode 
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;
+    // Toggle .dark class for shadcn component compatibility
+    document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
 
   const setLanguage = useCallback((next: Language) => {

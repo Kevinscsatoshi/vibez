@@ -4,7 +4,15 @@ import { useRouter } from "next/navigation";
 import { PlaygroundEditor } from "@/components/playground-editor";
 import { saveSnippet } from "./actions";
 
-export function PlaygroundClient() {
+interface PlaygroundClientProps {
+  recipeData?: {
+    title: string;
+    prompt: string;
+    description: string;
+  } | null;
+}
+
+export function PlaygroundClient({ recipeData }: PlaygroundClientProps) {
   const router = useRouter();
 
   const handleSave = async (data: {
@@ -32,7 +40,15 @@ export function PlaygroundClient() {
     // redirect happens in server action for new snippets
   };
 
+  // If loaded from a recipe, pre-populate with recipe context as HTML comment
+  const initialHtml = recipeData
+    ? `<!-- Recipe: ${recipeData.title} -->\n<!-- ${recipeData.description} -->\n\n<div class="container">\n  <h1>${recipeData.title}</h1>\n  <p>Start building here...</p>\n</div>`
+    : undefined;
+
   return (
-    <PlaygroundEditor onSave={handleSave} />
+    <PlaygroundEditor
+      onSave={handleSave}
+      initialHtml={initialHtml}
+    />
   );
 }

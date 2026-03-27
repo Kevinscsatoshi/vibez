@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { BookmarkSimple } from "@phosphor-icons/react";
 import { toggleSave } from "@/app/actions/saves";
 
 interface SaveButtonProps {
@@ -44,9 +45,7 @@ export function SaveButton({
           saved ? "text-accent font-medium" : "text-muted hover:text-foreground"
         }`}
       >
-        <svg className="h-3.5 w-3.5" fill={saved ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-        </svg>
+        <BookmarkSimple className="h-3.5 w-3.5" weight={saved ? "fill" : "regular"} />
         {count > 0 && <span>{count}</span>}
       </button>
     );
@@ -63,9 +62,7 @@ export function SaveButton({
           : "bg-foreground text-background hover:opacity-90"
       }`}
     >
-      <svg className="h-4 w-4" fill={saved ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-      </svg>
+      <BookmarkSimple className="h-4 w-4" weight={saved ? "fill" : "regular"} />
       {saved ? "Saved" : "Save"}
       {count > 0 && <span className="text-xs opacity-80">{count}</span>}
     </button>

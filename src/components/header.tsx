@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { Sun, Moon, GearSix, Translate } from "@phosphor-icons/react";
 import { SearchBar } from "@/components/search-bar";
 import { UserNav } from "@/components/user-nav";
 import type { Project } from "@/types/database";
@@ -35,27 +36,40 @@ export function Header({ projects }: { projects: Project[] }) {
             <Link href="/workspace" className="font-bitcount text-muted hover:text-foreground transition-colors">
               {t("nav.workspace")}
             </Link>
+            <Link href="/playground" className="font-bitcount text-muted hover:text-foreground transition-colors">
+              {t("nav.playground")}
+            </Link>
           </nav>
-          <select
-            aria-label={t("ui.language")}
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as Language)}
-            className="hidden md:inline-flex h-9 rounded-md border border-border bg-surface px-3 text-[16px] text-muted"
-          >
-            {Object.entries(LANGUAGE_LABELS).map(([code, label]) => (
-              <option key={code} value={code}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <div className="hidden md:inline-flex items-center relative">
+            <Translate className="absolute left-2.5 h-4 w-4 text-muted pointer-events-none" weight="bold" />
+            <select
+              aria-label={t("ui.language")}
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as Language)}
+              className="h-9 rounded-md border border-border bg-surface pl-8 pr-3 text-[14px] text-muted appearance-none cursor-pointer hover:border-foreground/20 transition-colors"
+            >
+              {Object.entries(LANGUAGE_LABELS).map(([code, label]) => (
+                <option key={code} value={code}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
           <button
             type="button"
             aria-label={t("ui.theme")}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="inline-flex h-9 items-center justify-center rounded-md border border-border bg-surface px-3 text-[16px] text-muted hover:text-foreground transition-colors"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface text-muted hover:text-foreground hover:border-foreground/20 transition-colors"
           >
-            {theme === "dark" ? t("ui.light") : t("ui.dark")}
+            {theme === "dark" ? <Sun className="h-4.5 w-4.5" weight="bold" /> : <Moon className="h-4.5 w-4.5" weight="bold" />}
           </button>
+          <Link
+            href="/profile/me"
+            aria-label="Settings"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface text-muted hover:text-foreground hover:border-foreground/20 transition-colors"
+          >
+            <GearSix className="h-4.5 w-4.5" weight="bold" />
+          </Link>
           <SearchBar projects={projects} variant="header" />
           <UserNav />
         </div>

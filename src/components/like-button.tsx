@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Heart } from "@phosphor-icons/react";
 import { toggleLike } from "@/app/actions/likes";
 import { isUuid } from "@/lib/is-uuid";
 
@@ -81,19 +82,10 @@ export function LikeButton({
       } disabled:opacity-60`}
       title={liked ? "Unlike" : "Like"}
     >
-      <svg
-        viewBox="0 0 24 24"
+      <Heart
         className={isSm ? "h-3.5 w-3.5" : "h-4.5 w-4.5"}
-        fill={liked ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-        />
-      </svg>
+        weight={liked ? "fill" : "regular"}
+      />
       {count > 0 && <span>{count}</span>}
     </button>
   );

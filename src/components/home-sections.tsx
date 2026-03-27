@@ -1,6 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import {
+  Browser,
+  Lightning,
+  Wrench,
+  PencilSimpleLine,
+  ChartBar,
+  ChatCircleDots,
+  DeviceMobileCamera,
+  PuzzlePiece,
+  Sparkle,
+  Rocket,
+  Users,
+  ArrowRight,
+} from "@phosphor-icons/react";
 import { RecipeCard } from "@/components/recipe-card";
 import type { Project } from "@/types/database";
 import { useUiPreferences } from "@/components/providers/ui-preferences-provider";
@@ -20,14 +34,14 @@ const PERSONA_PILLS: { key: "home.persona.business" | "home.persona.marketing" |
 ];
 
 const CATEGORIES = [
-  { label: "Landing Pages", slug: "landing-page" },
-  { label: "Automations", slug: "automation" },
-  { label: "Internal Tools", slug: "internal-tool" },
-  { label: "Content Creation", slug: "content" },
-  { label: "Data & Analytics", slug: "data-tool" },
-  { label: "Chatbots", slug: "chatbot" },
-  { label: "Mobile Apps", slug: "mobile-app" },
-  { label: "Chrome Extensions", slug: "chrome-ext" },
+  { label: "Landing Pages", slug: "landing-page", icon: Browser, color: "bg-cat-indigo text-cat-indigo-text" },
+  { label: "Automations", slug: "automation", icon: Lightning, color: "bg-cat-amber text-cat-amber-text" },
+  { label: "Internal Tools", slug: "internal-tool", icon: Wrench, color: "bg-cat-slate text-cat-slate-text" },
+  { label: "Content Creation", slug: "content", icon: PencilSimpleLine, color: "bg-cat-violet text-cat-violet-text" },
+  { label: "Data & Analytics", slug: "data-tool", icon: ChartBar, color: "bg-cat-teal text-cat-teal-text" },
+  { label: "Chatbots", slug: "chatbot", icon: ChatCircleDots, color: "bg-cat-emerald text-cat-emerald-text" },
+  { label: "Mobile Apps", slug: "mobile-app", icon: DeviceMobileCamera, color: "bg-cat-rose text-cat-rose-text" },
+  { label: "Chrome Extensions", slug: "chrome-ext", icon: PuzzlePiece, color: "bg-cat-sky text-cat-sky-text" },
 ];
 
 export function HomeSections({ featured, trending, latest }: HomeSectionsProps) {
@@ -51,9 +65,10 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/browse"
-            className="bg-foreground text-background px-6 py-2.5 text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-2.5 text-sm font-medium rounded-full hover:bg-accent-hover transition-colors"
           >
             {t("home.hero.browseRecipes")}
+            <ArrowRight className="h-4 w-4" weight="bold" />
           </Link>
           <Link
             href="/create"
@@ -108,7 +123,7 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
                     ))}
                   </div>
                 </div>
-                <span className="text-xs text-muted shrink-0 ml-3">&rarr;</span>
+                <ArrowRight className="h-4 w-4 text-muted shrink-0 ml-3" weight="bold" />
               </Link>
             ))}
           </div>
@@ -132,16 +147,22 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted mb-4">
           {t("home.browseByGoal")}
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/browse?category=${cat.slug}`}
-              className="flex items-center justify-center rounded-xl border border-border bg-surface px-4 py-4 text-sm font-medium hover:bg-tag-bg hover:border-foreground/20 transition-colors text-center"
-            >
-              {cat.label}
-            </Link>
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <Link
+                key={cat.slug}
+                href={`/browse?category=${cat.slug}`}
+                className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-4 hover:border-foreground/20 hover:shadow-sm transition-all"
+              >
+                <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${cat.color} shrink-0`}>
+                  <Icon className="h-5 w-5" weight="duotone" />
+                </span>
+                <span className="text-sm font-medium">{cat.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
@@ -163,15 +184,24 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
           {t("home.whyVibez")}
         </h2>
         <div className="grid gap-6 sm:grid-cols-3">
-          <div className="text-center">
+          <div className="text-center flex flex-col items-center">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cat-indigo text-cat-indigo-text mb-3">
+              <Sparkle className="h-5 w-5" weight="duotone" />
+            </span>
             <h3 className="font-semibold text-sm mb-1.5">{t("home.valueProp1.title")}</h3>
             <p className="text-xs text-muted leading-relaxed">{t("home.valueProp1.desc")}</p>
           </div>
-          <div className="text-center">
+          <div className="text-center flex flex-col items-center">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cat-emerald text-cat-emerald-text mb-3">
+              <Users className="h-5 w-5" weight="duotone" />
+            </span>
             <h3 className="font-semibold text-sm mb-1.5">{t("home.valueProp2.title")}</h3>
             <p className="text-xs text-muted leading-relaxed">{t("home.valueProp2.desc")}</p>
           </div>
-          <div className="text-center">
+          <div className="text-center flex flex-col items-center">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cat-amber text-cat-amber-text mb-3">
+              <Rocket className="h-5 w-5" weight="duotone" />
+            </span>
             <h3 className="font-semibold text-sm mb-1.5">{t("home.valueProp3.title")}</h3>
             <p className="text-xs text-muted leading-relaxed">{t("home.valueProp3.desc")}</p>
           </div>
@@ -183,9 +213,10 @@ export function HomeSections({ featured, trending, latest }: HomeSectionsProps) 
         <p className="text-sm text-muted mb-4">{t("home.cta.prompt")}</p>
         <Link
           href="/create"
-          className="bg-foreground text-background px-6 py-2.5 text-sm font-medium rounded-full hover:opacity-90 transition-opacity inline-block"
+          className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-2.5 text-sm font-medium rounded-full hover:bg-accent-hover transition-colors"
         >
           {t("home.cta.button")}
+          <ArrowRight className="h-4 w-4" weight="bold" />
         </Link>
       </section>
     </div>

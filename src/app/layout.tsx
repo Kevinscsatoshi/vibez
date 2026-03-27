@@ -51,9 +51,10 @@ export default function RootLayout({
                   var storedTheme = localStorage.getItem("vibez.theme");
                   var theme = storedTheme === "dark" || storedTheme === "light"
                     ? storedTheme
-                    : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+                    : "light";
                   document.documentElement.dataset.theme = theme;
                   document.documentElement.style.colorScheme = theme;
+                  if (theme === "dark") document.documentElement.classList.add("dark");
                 } catch (e) {}
               })();
             `,
@@ -65,16 +66,10 @@ export default function RootLayout({
               (function() {
                 try {
                   document.documentElement.dataset.bootReady = "0";
-                  var reveal = function() {
-                    window.setTimeout(function() {
-                      document.documentElement.dataset.bootReady = "1";
-                    }, 3000);
-                  };
-                  if (document.readyState === "complete") {
-                    reveal();
-                  } else {
-                    window.addEventListener("load", reveal, { once: true });
-                  }
+                  // Fallback: reveal after 4s even if React never mounts
+                  window.__bootTimeout = window.setTimeout(function() {
+                    document.documentElement.dataset.bootReady = "1";
+                  }, 4000);
                 } catch (e) {}
               })();
             `,
