@@ -115,7 +115,7 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const MAX_PARTICLES = 150;
+const MAX_PARTICLES = 500;
 const palettes = [
   ['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff'],
   ['#00f5d4','#00bbf9','#9b5de5','#f15bb5','#fee440'],
@@ -163,11 +163,11 @@ function addParticles(x, y, count) {
 }
 
 canvas.addEventListener('mousemove', (e) => {
-  addParticles(e.clientX, e.clientY, 2);
+  addParticles(e.clientX, e.clientY, 3);
 });
 
 canvas.addEventListener('click', (e) => {
-  addParticles(e.clientX, e.clientY, 20);
+  addParticles(e.clientX, e.clientY, 25);
 });
 
 document.getElementById('color-btn').onclick = () => {
