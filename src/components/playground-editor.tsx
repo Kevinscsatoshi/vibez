@@ -112,8 +112,12 @@ button:hover {
 
 const DEFAULT_JS = `const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth || document.documentElement.clientWidth || 300;
+  canvas.height = window.innerHeight || document.documentElement.clientHeight || 300;
+}
+resizeCanvas();
 
 const MAX_PARTICLES = 500;
 const palettes = [
@@ -186,12 +190,10 @@ document.getElementById('clear-btn').onclick = () => {
   console.log('Cleared all particles');
 };
 
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+window.addEventListener('resize', resizeCanvas);
 
 function animate() {
+  if (canvas.width === 0 || canvas.height === 0) resizeCanvas();
   ctx.fillStyle = 'rgba(10, 10, 26, 0.18)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   particles = particles.filter(p => p.life > 0);
@@ -203,10 +205,13 @@ function animate() {
   ctx.globalAlpha = 1;
   document.getElementById('stats').textContent =
     'particles: ' + particles.length;
-  requestAnimationFrame(animate);
 }
 
-animate();
+// Primary: requestAnimationFrame (smooth 60fps)
+(function loop() { animate(); requestAnimationFrame(loop); })();
+// Fallback: setInterval ensures animation runs even if rAF is throttled
+setInterval(animate, 32);
+
 console.log('Particle playground ready! Move your mouse.');`;
 
 // Script injected into iframe to capture console output
@@ -502,7 +507,7 @@ ${CONSOLE_CAPTURE_SCRIPT}
             <iframe
               ref={iframeRef}
               srcDoc={buildSrcDoc()}
-              sandbox="allow-scripts"
+              sandbox="allow-scripts allow-same-origin"
               className={`w-full bg-white ${showConsole ? "flex-[3]" : "flex-1"}`}
               title="Preview"
             />
@@ -696,7 +701,7 @@ ${CONSOLE_CAPTURE_SCRIPT}
           <iframe
             ref={fullIframeRef}
             srcDoc={buildSrcDoc()}
-            sandbox="allow-scripts"
+            sandbox="allow-scripts allow-same-origin"
             className="flex-1 w-full bg-white"
             title="Fullscreen Preview"
           />
