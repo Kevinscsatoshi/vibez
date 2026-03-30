@@ -385,10 +385,10 @@ export default function CreatePage() {
   const labelClass = "block text-xs font-medium text-muted mb-1.5";
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Share a Recipe</h1>
-        <p className="mt-1 text-sm text-muted">
+    <div className="mx-auto max-w-2xl px-4 py-8">
+      <div className="mb-6">
+        <h1 className="text-lg font-bold tracking-tight">Share a Recipe</h1>
+        <p className="mt-0.5 text-sm text-foreground/40">
           Teach others how to build what you built — step by step.
         </p>
       </div>

@@ -51,7 +51,7 @@ export default function RootLayout({
                   var storedTheme = localStorage.getItem("vibez.theme");
                   var theme = storedTheme === "dark" || storedTheme === "light"
                     ? storedTheme
-                    : "light";
+                    : "dark";
                   document.documentElement.dataset.theme = theme;
                   document.documentElement.style.colorScheme = theme;
                   if (theme === "dark") document.documentElement.classList.add("dark");
@@ -65,11 +65,16 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  document.documentElement.dataset.bootReady = "0";
-                  // Fallback: reveal after 4s even if React never mounts
-                  window.__bootTimeout = window.setTimeout(function() {
+                  var hasVisited = sessionStorage.getItem("vibez.visited");
+                  if (hasVisited) {
                     document.documentElement.dataset.bootReady = "1";
-                  }, 4000);
+                  } else {
+                    document.documentElement.dataset.bootReady = "0";
+                    sessionStorage.setItem("vibez.visited", "1");
+                    window.__bootTimeout = window.setTimeout(function() {
+                      document.documentElement.dataset.bootReady = "1";
+                    }, 4000);
+                  }
                 } catch (e) {}
               })();
             `,
@@ -86,7 +91,7 @@ export default function RootLayout({
         <UiPreferencesProvider>
           <Header projects={projects} />
           <main className="flex-1">{children}</main>
-          <footer className="border-t border-border py-8 text-center text-sm text-muted">
+          <footer className="py-6 text-center text-sm text-foreground/30">
             <FooterTagline />
           </footer>
         </UiPreferencesProvider>

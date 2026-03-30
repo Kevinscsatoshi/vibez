@@ -1,16 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Project } from "@/types/database";
 
 interface RecipeCardProps {
   project: Project;
   showPreview?: boolean;
+  size?: "sm" | "md" | "lg";
+  gradientColor?: string;
 }
-
-const DIFFICULTY_STYLES: Record<string, string> = {
-  beginner: "bg-cat-emerald text-cat-emerald-text",
-  intermediate: "bg-cat-amber text-cat-amber-text",
-  advanced: "bg-cat-rose text-cat-rose-text",
-};
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   beginner: "Beginner",
@@ -18,11 +17,26 @@ const DIFFICULTY_LABELS: Record<string, string> = {
   advanced: "Advanced",
 };
 
-const CODING_LABELS: Record<string, string> = {
-  none: "No code",
-  minimal: "Minimal code",
-  moderate: "Some code",
-  heavy: "Code-heavy",
+// particle.news-style colored gradient overlays
+const GRADIENT_COLORS = [
+  "from-blue-900/60 via-blue-900/20",
+  "from-emerald-900/60 via-emerald-900/20",
+  "from-amber-900/60 via-amber-900/20",
+  "from-rose-900/60 via-rose-900/20",
+  "from-violet-900/60 via-violet-900/20",
+  "from-cyan-900/60 via-cyan-900/20",
+  "from-orange-900/60 via-orange-900/20",
+  "from-pink-900/60 via-pink-900/20",
+  "from-teal-900/60 via-teal-900/20",
+  "from-indigo-900/60 via-indigo-900/20",
+  "from-lime-900/60 via-lime-900/20",
+  "from-red-900/60 via-red-900/20",
+];
+
+const SIZE_CONFIG = {
+  sm: { minH: "min-h-[260px]", titleSize: "text-sm font-semibold", showDesc: false },
+  md: { minH: "min-h-[320px]", titleSize: "text-base font-bold", showDesc: true },
+  lg: { minH: "min-h-[400px]", titleSize: "text-lg font-bold leading-snug", showDesc: true },
 };
 
 function getVideoThumbnail(url: string | null): string | null {
@@ -48,95 +62,87 @@ function getVideoThumbnail(url: string | null): string | null {
   }
 }
 
-export function RecipeCard({ project, showPreview = false }: RecipeCardProps) {
+export function RecipeCard({ project, size = "md", gradientColor }: RecipeCardProps) {
   const screenshot = project.screenshots[0] ?? null;
   const videoThumb = getVideoThumbnail(project.video_url);
   const previewImage = screenshot ?? videoThumb;
   const difficulty = project.difficulty;
-  const codingReq = project.coding_required;
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const cfg = SIZE_CONFIG[size];
+
+  // Use provided gradient or pick from hash
+  const gradient = gradientColor ?? GRADIENT_COLORS[
+    Math.abs(project.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0)) % GRADIENT_COLORS.length
+  ];
 
   return (
-    <div className="group relative border border-border bg-surface rounded-xl hover:border-foreground/20 transition-colors">
+    <div className={`group relative ${cfg.minH} rounded-[14px] overflow-hidden transition-transform duration-150 ease-elastic hover:scale-[1.02] active:scale-[0.98] motion-reduce:transform-none`}>
       <Link
         href={`/project/${project.id}`}
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-20"
         aria-label={project.title}
       />
-      <div className="relative z-10 pointer-events-none p-4">
-        {showPreview && previewImage && (
-          <div className="mb-3 -mx-4 -mt-4">
-            <div className="relative overflow-hidden rounded-t-xl border-b border-border bg-tag-bg">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewImage}
-                alt={`${project.title} preview`}
-                className="h-40 w-full object-cover"
-              />
-            </div>
-          </div>
-        )}
 
-        {/* Trust signal badges */}
-        <div className="flex flex-wrap items-center gap-1.5 mb-3">
-          {difficulty && (
-            <span className={`px-2 py-0.5 text-[11px] font-medium rounded-full ${DIFFICULTY_STYLES[difficulty] ?? "bg-tag-bg text-tag-text"}`}>
-              {DIFFICULTY_LABELS[difficulty] ?? difficulty}
-            </span>
-          )}
+      {/* Background image */}
+      <div className="absolute inset-0">
+        {previewImage ? (
+          <>
+            {!imgLoaded && (
+              <div className="absolute inset-0 bg-surface" />
+            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewImage}
+              alt=""
+              className={`h-full w-full object-cover transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+              loading="lazy"
+              onLoad={() => setImgLoaded(true)}
+            />
+          </>
+        ) : (
+          <div className="h-full w-full bg-surface" />
+        )}
+      </div>
+
+      {/* Colored gradient overlay — particle.news style */}
+      <div className={`absolute inset-0 bg-gradient-to-t ${gradient} to-transparent`} />
+      {/* Extra dark gradient at bottom for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+      {/* Content — all overlaid on image */}
+      <div className="relative z-10 flex flex-col justify-end h-full p-4">
+        {/* Top row: metadata */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            {project.completion_count > 0 && (
+              <span className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">
+                {project.completion_count} tried
+              </span>
+            )}
+            {difficulty && (
+              <span className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">
+                {DIFFICULTY_LABELS[difficulty] ?? difficulty}
+              </span>
+            )}
+          </div>
           {project.estimated_time && (
-            <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-tag-bg text-tag-text">
+            <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
               {project.estimated_time}
             </span>
           )}
-          {codingReq && (
-            <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-tag-bg text-tag-text">
-              {CODING_LABELS[codingReq] ?? codingReq}
-            </span>
-          )}
         </div>
 
-        {/* Title and one-liner */}
-        <div className="mb-3">
-          <h3 className="font-semibold text-base leading-snug">{project.title}</h3>
-          <p className="mt-1 text-sm text-muted leading-relaxed line-clamp-2">{project.one_liner}</p>
-        </div>
+        {/* Title */}
+        <h3 className={`${cfg.titleSize} text-white leading-tight`}>
+          {project.title}
+        </h3>
 
-        {/* Tools */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {project.stack_tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="bg-tag-bg text-tag-text px-2 py-0.5 text-xs rounded"
-            >
-              {tag}
-            </span>
-          ))}
-          {project.stack_tags.length > 3 && (
-            <span className="text-xs text-muted">+{project.stack_tags.length - 3}</span>
-          )}
-        </div>
-
-        {/* Footer: author + completion count */}
-        <div className="flex items-center justify-between text-xs text-muted">
-          <div className="flex items-center gap-2 min-w-0">
-            {project.author && (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={project.author.avatar_url}
-                  alt={project.author.display_name}
-                  className="h-5 w-5 rounded-full shrink-0"
-                />
-                <span className="truncate">{project.author.display_name}</span>
-              </>
-            )}
-          </div>
-          {project.completion_count > 0 && (
-            <span className="text-success font-medium whitespace-nowrap">
-              {project.completion_count} tried this
-            </span>
-          )}
-        </div>
+        {/* Description */}
+        {cfg.showDesc && project.one_liner && (
+          <p className="mt-1.5 text-[13px] text-white/60 leading-relaxed line-clamp-2">
+            {project.one_liner}
+          </p>
+        )}
       </div>
     </div>
   );

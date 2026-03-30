@@ -59,7 +59,7 @@ export function UserNav() {
     return (
       <Link
         href="/signin"
-        className="font-bitcount shrink-0 bg-foreground text-background px-3.5 sm:px-4.5 py-2 text-[16px] sm:text-[17px] hover:opacity-90 transition-opacity whitespace-nowrap rounded-md"
+        className="shrink-0 bg-foreground text-background px-4 py-1.5 text-sm font-medium hover:opacity-90 transition-opacity whitespace-nowrap rounded-full"
       >
         {t("auth.signIn")}
       </Link>

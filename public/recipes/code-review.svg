@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#1e3a4a"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bg)"/>
+  <rect x="80" y="50" width="440" height="300" rx="12" fill="#ffffff" opacity="0.06"/>
+  <rect x="80" y="50" width="440" height="36" rx="12" fill="#ffffff" opacity="0.06"/>
+  <circle cx="102" cy="68" r="6" fill="#ff5f56" opacity="0.7"/>
+  <circle cx="120" cy="68" r="6" fill="#ffbd2e" opacity="0.7"/>
+  <circle cx="138" cy="68" r="6" fill="#27c93f" opacity="0.7"/>
+  <rect x="108" y="106" width="70" height="5" rx="2.5" fill="#93c5fd" opacity="0.6"/>
+  <rect x="186" y="106" width="50" height="5" rx="2.5" fill="#fca5a5" opacity="0.5"/>
+  <rect x="108" y="122" width="110" height="5" rx="2.5" fill="#d8b4fe" opacity="0.45"/>
+  <rect x="226" y="122" width="90" height="5" rx="2.5" fill="#86efac" opacity="0.5"/>
+  <rect x="122" y="138" width="80" height="5" rx="2.5" fill="#93c5fd" opacity="0.4"/>
+  <rect x="210" y="138" width="60" height="5" rx="2.5" fill="#ffffff" opacity="0.2"/>
+  <rect x="122" y="154" width="100" height="5" rx="2.5" fill="#fdba74" opacity="0.45"/>
+  <rect x="108" y="170" width="50" height="5" rx="2.5" fill="#93c5fd" opacity="0.6"/>
+  <rect x="96" y="196" width="4" height="36" rx="2" fill="#4ade80" opacity="0.5"/>
+  <rect x="108" y="200" width="130" height="5" rx="2.5" fill="#86efac" opacity="0.2"/>
+  <rect x="108" y="216" width="90" height="5" rx="2.5" fill="#86efac" opacity="0.2"/>
+  <rect x="96" y="248" width="4" height="36" rx="2" fill="#f87171" opacity="0.5"/>
+  <rect x="108" y="252" width="110" height="5" rx="2.5" fill="#fca5a5" opacity="0.15"/>
+  <rect x="108" y="268" width="70" height="5" rx="2.5" fill="#fca5a5" opacity="0.15"/>
+  <circle cx="480" cy="160" r="28" fill="none" stroke="#4ade80" stroke-width="2.5" opacity="0.5"/>
+  <polyline points="468,160 476,168 494,150" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+</svg>

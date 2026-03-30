@@ -30,12 +30,12 @@ const LANGUAGE_STORAGE_KEY = "vibez.language";
 const THEME_STORAGE_KEY = "vibez.theme";
 
 function getInitialTheme(): ThemeMode {
-  if (typeof window === "undefined") return "light";
+  if (typeof window === "undefined") return "dark";
   const fromDom = document.documentElement.dataset.theme;
   if (fromDom === "light" || fromDom === "dark") return fromDom;
   const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "light" || stored === "dark") return stored;
-  return "light";
+  return "dark";
 }
 
 function getInitialLanguage(): Language {

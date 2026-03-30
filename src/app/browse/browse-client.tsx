@@ -111,29 +111,37 @@ export function BrowseClient({ recipes }: { recipes: Project[] }) {
   }, [recipes, query, initialPersona, difficulty, coding, category, sort]);
 
   const selectClass =
-    "h-9 rounded-lg border border-border bg-surface px-2.5 text-sm text-foreground focus:outline-none focus:border-foreground/30 transition-colors";
+    "h-9 rounded-full border border-foreground/[0.08] bg-surface/60 px-3 text-sm text-foreground/70 focus:outline-none focus:border-foreground/20 transition-colors";
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">
-          {initialPersona
-            ? `Recipes for ${initialPersona}s`
-            : "Browse Recipes"}
-        </h1>
-        <p className="mt-1 text-sm text-muted">
-          Find step-by-step recipes to build with AI. Use filters to narrow down.
-        </p>
+    <div className="mx-auto w-full max-w-[1600px] px-3 sm:px-4 lg:px-6 py-8">
+      {/* Header + Filters row */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-lg font-bold tracking-tight">
+            {initialPersona
+              ? `Recipes for ${initialPersona}s`
+              : "Browse Recipes"}
+          </h1>
+          <p className="mt-0.5 text-sm text-foreground/40">
+            {filtered.length} recipe{filtered.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+        <select value={sort} onChange={(e) => setSort(e.target.value)} className={selectClass}>
+          {SORT_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
       </div>
 
-      {/* Search + Filters */}
+      {/* Filter chips */}
       <div className="mb-6 flex flex-wrap gap-2 items-center">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search recipes..."
-          className="flex-1 min-w-[200px] h-9 rounded-lg border border-border bg-surface px-3 text-sm focus:outline-none focus:border-foreground/30 transition-colors"
+          className="flex-1 min-w-[200px] h-9 rounded-full border border-foreground/[0.08] bg-surface/60 px-4 text-sm focus:outline-none focus:border-foreground/20 transition-colors"
         />
         <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className={selectClass}>
           {DIFFICULTY_OPTIONS.map((o) => (
@@ -150,30 +158,21 @@ export function BrowseClient({ recipes }: { recipes: Project[] }) {
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value)} className={selectClass}>
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
       </div>
 
       {/* Results */}
       {filtered.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((recipe) => (
             <RecipeCard key={recipe.id} project={recipe} />
           ))}
         </div>
       ) : (
         <div className="text-center py-16">
-          <p className="text-sm text-muted mb-2">No recipes match your filters.</p>
-          <p className="text-xs text-muted">Try different keywords or fewer filters.</p>
+          <p className="text-sm text-foreground/40 mb-2">No recipes match your filters.</p>
+          <p className="text-xs text-foreground/30">Try different keywords or fewer filters.</p>
         </div>
       )}
-
-      <div className="mt-6 text-center text-xs text-muted">
-        {filtered.length} recipe{filtered.length !== 1 ? "s" : ""} found
-      </div>
     </div>
   );
 }

@@ -29,85 +29,286 @@ interface PlaygroundEditorProps {
   initialJs?: string;
 }
 
-const DEFAULT_HTML = `<canvas id="canvas"></canvas>
-<div class="overlay">
+const DEFAULT_HTML = `<div class="header">
   <h1>VibeZ Playground</h1>
-  <p>Move your mouse to create particles</p>
+  <p>Click any card to flip it!</p>
   <div class="controls">
-    <button id="color-btn">Change Color</button>
-    <button id="gravity-btn">Toggle Gravity</button>
-    <button id="clear-btn">Clear</button>
+    <button id="theme-btn">Change Theme</button>
+    <span id="counter">0 / 6 flipped</span>
   </div>
-  <div id="stats"></div>
+</div>
+
+<div class="grid">
+  <div class="card" data-id="1">
+    <div class="card-inner">
+      <div class="card-front"><span class="emoji">🚀</span><span class="label">Launch</span></div>
+      <div class="card-back"><p>Ship fast, iterate faster. Every great app starts with a single line of code.</p></div>
+    </div>
+  </div>
+  <div class="card" data-id="2">
+    <div class="card-inner">
+      <div class="card-front"><span class="emoji">🎨</span><span class="label">Design</span></div>
+      <div class="card-back"><p>Good design is invisible. Great design makes you feel something.</p></div>
+    </div>
+  </div>
+  <div class="card" data-id="3">
+    <div class="card-inner">
+      <div class="card-front"><span class="emoji">⚡</span><span class="label">Speed</span></div>
+      <div class="card-back"><p>Performance is a feature. Every millisecond counts for user experience.</p></div>
+    </div>
+  </div>
+  <div class="card" data-id="4">
+    <div class="card-inner">
+      <div class="card-front"><span class="emoji">🧩</span><span class="label">Build</span></div>
+      <div class="card-back"><p>Components are like LEGO blocks — small pieces that create amazing things.</p></div>
+    </div>
+  </div>
+  <div class="card" data-id="5">
+    <div class="card-inner">
+      <div class="card-front"><span class="emoji">🌟</span><span class="label">Shine</span></div>
+      <div class="card-back"><p>Add that extra polish. Animations and details make the difference.</p></div>
+    </div>
+  </div>
+  <div class="card" data-id="6">
+    <div class="card-inner">
+      <div class="card-front"><span class="emoji">🎉</span><span class="label">Ship It</span></div>
+      <div class="card-back"><p>Done is better than perfect. Ship it and celebrate!</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 </div>`;
 
-const DEFAULT_CSS = `* { margin: 0; padding: 0; box-sizing: border-box; }
+const DEFAULT_CSS = `:root {
+  --bg: #0a0a1a;
+  --bg2: #1a1a3e;
+  --bg3: #2d1b69;
+  --card-bg: rgba(255,255,255,0.08);
+  --card-border: rgba(255,255,255,0.15);
+  --text: #fff;
+  --text-dim: rgba(255,255,255,0.6);
+  --accent: #48dbfb;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  overflow: hidden;
-  background: #0a0a1a;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg), var(--bg2), var(--bg3));
+  background-size: 400% 400%;
+  animation: gradient-shift 8s ease infinite;
   font-family: system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  overflow-x: hidden;
 }
 
-canvas {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
-.overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  padding: 1.5rem;
+.header {
   text-align: center;
-  pointer-events: none;
-  z-index: 10;
+  padding: 2rem 1rem 1rem;
+  position: relative;
+  z-index: 2;
 }
 
 h1 {
-  color: #fff;
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
 }
 
-p {
-  color: rgba(255,255,255,0.6);
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+.header p {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
 }
 
 .controls {
   margin-top: 0.75rem;
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   justify-content: center;
-  pointer-events: auto;
+  align-items: center;
 }
 
 button {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 0.4rem 1rem;
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  padding: 0.4rem 1.2rem;
   border-radius: 999px;
   cursor: pointer;
   font-size: 0.75rem;
-  backdrop-filter: blur(10px);
-  transition: all 0.2s;
+  backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(.34, 1.56, .64, 1);
 }
 
 button:hover {
-  background: rgba(255,255,255,0.2);
-  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.18);
+  border-color: var(--accent);
+  transform: scale(1.05);
 }
 
-#stats {
-  color: rgba(255,255,255,0.4);
-  font-size: 0.65rem;
-  margin-top: 0.5rem;
+#counter {
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 600;
   font-family: monospace;
+}
+
+/* Card Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 1.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* 3D Flip Cards */
+.card {
+  perspective: 800px;
+  cursor: pointer;
+  aspect-ratio: 1;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.card:hover .card-inner {
+  transform: scale(1.05);
+}
+
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card.flipped:hover .card-inner {
+  transform: rotateY(180deg) scale(1.05);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s;
+}
+
+.card:hover .card-front,
+.card:hover .card-back {
+  border-color: var(--accent);
+}
+
+.card-front {
+  background: var(--card-bg);
+}
+
+.card-back {
+  background: linear-gradient(135deg, rgba(72,219,251,0.15), rgba(155,93,229,0.15));
+  transform: rotateY(180deg);
+  padding: 1rem;
+}
+
+.card-back p {
+  font-size: 0.7rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.emoji {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.4rem;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Floating Orbs */
+.orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  filter: blur(60px);
+}
+
+.orb-1 {
+  width: 200px; height: 200px;
+  background: #48dbfb;
+  top: 20%; left: 10%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 150px; height: 150px;
+  background: #ff9ff3;
+  top: 60%; right: 10%;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+.orb-3 {
+  width: 180px; height: 180px;
+  background: #feca57;
+  bottom: 10%; left: 40%;
+  animation: float 7s ease-in-out infinite 1s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.1); }
+}
+
+/* All done celebration */
+.header.done h1 { color: var(--accent); }
+.header.done #counter { animation: pulse 0.5s ease 3; }
+
+@keyframes pulse {
+  50% { transform: scale(1.2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
 }`;
 
 const DEFAULT_JS = `const canvas = document.getElementById('canvas');

@@ -94,10 +94,10 @@ export default async function WorkspacePage() {
   const { savedRecipes, myRecipes, completedRecipes } = await getWorkspaceData(user.id);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Workspace</h1>
-        <p className="mt-1 text-sm text-muted">
+    <div className="mx-auto w-full max-w-[1600px] px-3 sm:px-4 lg:px-6 py-8">
+      <div className="mb-6">
+        <h1 className="text-lg font-bold tracking-tight">Workspace</h1>
+        <p className="mt-0.5 text-sm text-foreground/40">
           Your saved recipes, your builds, and your progress.
         </p>
       </div>
@@ -108,15 +108,15 @@ export default async function WorkspacePage() {
           Saved Recipes
         </h2>
         {savedRecipes.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {savedRecipes.map((recipe) => (
               <RecipeCard key={recipe.id} project={recipe} />
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-border p-8 text-center">
-            <p className="text-sm text-muted mb-2">You haven&apos;t saved any recipes yet.</p>
-            <p className="text-xs text-muted mb-4">Browse recipes and hit &apos;Save&apos; on anything you want to try later.</p>
+          <div className="rounded-xl border border-dashed border-foreground/[0.08] p-8 text-center">
+            <p className="text-sm text-foreground/40 mb-2">You haven&apos;t saved any recipes yet.</p>
+            <p className="text-xs text-foreground/30 mb-4">Browse recipes and hit &apos;Save&apos; on anything you want to try later.</p>
             <Link
               href="/browse"
               className="inline-block bg-foreground text-background px-4 py-2 text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
@@ -133,15 +133,15 @@ export default async function WorkspacePage() {
           My Recipes
         </h2>
         {myRecipes.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {myRecipes.map((recipe) => (
               <RecipeCard key={recipe.id} project={recipe} />
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-border p-8 text-center">
-            <p className="text-sm text-muted mb-2">You haven&apos;t shared any recipes yet.</p>
-            <p className="text-xs text-muted mb-4">Built something with AI? Share how you did it — step by step.</p>
+          <div className="rounded-xl border border-dashed border-foreground/[0.08] p-8 text-center">
+            <p className="text-sm text-foreground/40 mb-2">You haven&apos;t shared any recipes yet.</p>
+            <p className="text-xs text-foreground/30 mb-4">Built something with AI? Share how you did it — step by step.</p>
             <Link
               href="/create"
               className="inline-block bg-foreground text-background px-4 py-2 text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
@@ -158,15 +158,15 @@ export default async function WorkspacePage() {
           Completed
         </h2>
         {completedRecipes.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {completedRecipes.map((recipe) => (
               <RecipeCard key={recipe.id} project={recipe} />
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-border p-8 text-center">
-            <p className="text-sm text-muted mb-2">You haven&apos;t completed any recipes yet.</p>
-            <p className="text-xs text-muted mb-4">Follow a recipe, then come back and mark it as done to track your builds.</p>
+          <div className="rounded-xl border border-dashed border-foreground/[0.08] p-8 text-center">
+            <p className="text-sm text-foreground/40 mb-2">You haven&apos;t completed any recipes yet.</p>
+            <p className="text-xs text-foreground/30 mb-4">Follow a recipe, then come back and mark it as done to track your builds.</p>
             <Link
               href="/browse?difficulty=beginner"
               className="inline-block bg-foreground text-background px-4 py-2 text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
